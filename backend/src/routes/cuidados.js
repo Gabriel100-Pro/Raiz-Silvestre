@@ -1,6 +1,7 @@
 const express = require("express");
 
 const { authMiddleware } = require("../middleware/auth");
+const { requireAdmin } = require("../middleware/adminAuth");
 const {
   getProximosCuidados,
   getProximoCuidadoById,
@@ -20,13 +21,13 @@ router.get("/clientes/:clienteId", authMiddleware, getProximosCuidados);
 // GET /api/proximos-cuidados/:id — Obter um próximo cuidado específico
 router.get("/:id", authMiddleware, getProximoCuidadoById);
 
-// POST /api/proximos-cuidados/clientes/:clienteId — Criar próximo cuidado (Admin)
-router.post("/clientes/:clienteId", authMiddleware, createProximoCuidado);
+// POST /api/proximos-cuidados/clientes/:clienteId — Criar próximo cuidado (Admin: JWT do cliente + X-Admin-Token)
+router.post("/clientes/:clienteId", authMiddleware, requireAdmin, createProximoCuidado);
 
-// PUT /api/proximos-cuidados/:id — Atualizar próximo cuidado (Admin)
-router.put("/:id", authMiddleware, updateProximoCuidado);
+// PUT /api/proximos-cuidados/:id — Atualizar próximo cuidado (Admin: JWT do cliente + X-Admin-Token)
+router.put("/:id", authMiddleware, requireAdmin, updateProximoCuidado);
 
-// DELETE /api/proximos-cuidados/:id — Deletar próximo cuidado (Admin)
-router.delete("/:id", authMiddleware, deleteProximoCuidado);
+// DELETE /api/proximos-cuidados/:id — Deletar próximo cuidado (Admin: JWT do cliente + X-Admin-Token)
+router.delete("/:id", authMiddleware, requireAdmin, deleteProximoCuidado);
 
 module.exports = router;
