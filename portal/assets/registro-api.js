@@ -98,7 +98,7 @@ function renderServicoCard(servico) {
           .slice(0, 2)
           .map(
             (foto) => `
-          <img src="${new URL(foto.url, API_BASE_URL.replace(/\/api$/, "/")).toString()}" alt="${foto.tipo}" class="portal-servico-foto" />
+          <img src="${new URL(foto.url, API_BASE_URL.replace(/\/api$/, "/")).toString()}" alt="${escapeHtml(foto.tipo)}" class="portal-servico-foto" />
         `
           )
           .join("")}
@@ -117,8 +117,8 @@ function renderServicoCard(servico) {
           .map(
             (obs) => `
           <div class="portal-observacao">
-            <strong>${obs.titulo || "Sem título"}</strong>
-            <p>${truncate(obs.descricao, 80)}</p>
+            <strong>${escapeHtml(obs.titulo || "Sem título")}</strong>
+            <p>${escapeHtml(truncate(obs.descricao, 80))}</p>
           </div>
         `
           )
@@ -131,15 +131,15 @@ function renderServicoCard(servico) {
     <article class="portal-servico-card">
       <div class="portal-servico-header">
         <div>
-          <h3>${servico.tipo}</h3>
+          <h3>${escapeHtml(servico.tipo)}</h3>
           <span class="portal-status ${statusClass}">${statusLabel}</span>
         </div>
         <time>${formatDate(servico.dataServico)}</time>
       </div>
-      <p>${truncate(servico.descricao, 120)}</p>
+      <p>${escapeHtml(truncate(servico.descricao, 120))}</p>
       ${fotosHTML}
       ${observacoesHTML}
-      ${servico.responsavel ? `<small>Responsável: ${servico.responsavel}</small>` : ""}
+      ${servico.responsavel ? `<small>Responsável: ${escapeHtml(servico.responsavel)}</small>` : ""}
       ${servico.valor ? `<small class="portal-servico-valor">${formatCurrency(servico.valor)}</small>` : ""}
     </article>
   `;
@@ -163,10 +163,10 @@ function renderProximoCuidadoCard(cuidado) {
   return `
     <article class="portal-cuidado-card">
       <div class="portal-cuidado-header">
-        <h3>${cuidado.titulo}</h3>
+        <h3>${escapeHtml(cuidado.titulo)}</h3>
         <span class="portal-status ${statusClass}">${statusLabel}</span>
       </div>
-      <p>${cuidado.descricao || "Sem descrição"}</p>
+      <p>${escapeHtml(cuidado.descricao || "Sem descrição")}</p>
       ${cuidado.dataPrevista ? `<time>Previsto para: ${formatDate(cuidado.dataPrevista)}</time>` : ""}
     </article>
   `;
@@ -266,9 +266,9 @@ async function populateDashboardWithRegistro(clienteId) {
         ? registro.servicos.slice(0, 5).map((servico) => `
           <tr>
             <td>${formatDate(servico.dataServico)}</td>
-            <td>${servico.tipo}</td>
-            <td>${servico.descricao || "—"}</td>
-            <td>${servico.responsavel || "—"}</td>
+            <td>${escapeHtml(servico.tipo)}</td>
+            <td>${escapeHtml(servico.descricao || "—")}</td>
+            <td>${escapeHtml(servico.responsavel || "—")}</td>
             <td>${servico.valor ? formatCurrency(servico.valor) : "—"}</td>
           </tr>`).join("")
         : `<tr><td colspan="5">Seu cadastro está ativo. Você ainda não possui serviços registrados.</td></tr>`;

@@ -30,7 +30,9 @@ function showToast(message, type = "success") {
   const container = getToastContainer();
   const toast = document.createElement("div");
   toast.className = `portal-toast portal-toast-${type === "error" ? "error" : "success"}`;
-  toast.innerHTML = `${TOAST_ICONS[type] || TOAST_ICONS.success}<span>${message}</span>`;
+  // Ícone é HTML fixo; a mensagem (pode conter dados da API) entra como texto.
+  toast.innerHTML = `${TOAST_ICONS[type] || TOAST_ICONS.success}<span></span>`;
+  toast.querySelector("span").textContent = message;
   container.appendChild(toast);
 
   setTimeout(() => {
@@ -467,9 +469,9 @@ if (portalPage) {
                   (item) => `
               <tr>
                 <td>${formatDate(item.data)}</td>
-                <td>${item.servico}</td>
-                <td>${item.descricao || "—"}</td>
-                <td>${item.responsavel || "—"}</td>
+                <td>${escapeHtml(item.servico)}</td>
+                <td>${escapeHtml(item.descricao || "—")}</td>
+                <td>${escapeHtml(item.responsavel || "—")}</td>
                 <td>${formatValor(item.valor) ? `R$ ${formatValor(item.valor)}` : "—"}</td>
               </tr>`
                 )
@@ -574,10 +576,10 @@ function renderServiceCard(servico) {
           <span class="portal-service-date">${formatDate(servico.data_servico || servico.dataServico)}</span>
           ${renderStatusBadge(servico.status)}
         </div>
-        <h3>${servico.tipo}</h3>
-        ${servico.descricao ? `<p class="portal-service-desc">${servico.descricao}</p>` : ""}
+        <h3>${escapeHtml(servico.tipo)}</h3>
+        ${servico.descricao ? `<p class="portal-service-desc">${escapeHtml(servico.descricao)}</p>` : ""}
         <div class="portal-service-meta">
-          ${servico.responsavel ? `<span><i class="fa-solid fa-user"></i> ${servico.responsavel}</span>` : ""}
+          ${servico.responsavel ? `<span><i class="fa-solid fa-user"></i> ${escapeHtml(servico.responsavel)}</span>` : ""}
           <span><i class="fa-solid fa-sack-dollar"></i> ${valorFormatado ? `R$ ${valorFormatado}` : "—"}</span>
         </div>
         ${observacoesHtml}
