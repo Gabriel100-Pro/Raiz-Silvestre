@@ -89,6 +89,19 @@ function isTokenExpired(token) {
   return Date.now() >= payload.exp * 1000;
 }
 
+// ID do cliente autenticado: fonte principal é o "sub" do JWT; portalCliente.id é apenas fallback.
+function getAuthClienteId(token) {
+  const sub = parseJwt(token)?.sub;
+  if (sub) {
+    return sub;
+  }
+  try {
+    return JSON.parse(localStorage.getItem("portalCliente") || "null")?.id || null;
+  } catch (error) {
+    return null;
+  }
+}
+
 const pendingSessionMessage = sessionStorage.getItem("portalSessionMessage");
 if (pendingSessionMessage) {
   sessionStorage.removeItem("portalSessionMessage");
@@ -493,6 +506,9 @@ if (portalPage) {
 // ---------- Linha do tempo de serviços (página Histórico) ----------
 
 function formatValor(valor) {
+  if (valor === null || valor === undefined || valor === "") {
+    return null;
+  }
   const numero = Number(valor);
   return Number.isNaN(numero) ? null : numero.toLocaleString("pt-BR", { minimumFractionDigits: 2 });
 }
@@ -532,20 +548,39 @@ function renderServiceCard(servico) {
 
   const valorFormatado = formatValor(servico.valor);
 
+  // Observações vêm do registro completo (mesma estrutura/classes usadas em registro-api.js).
+  const observacoes = servico.observacoes || [];
+  const observacoesHtml = observacoes.length
+    ? `
+        <div class="portal-servico-observacoes">
+          <h4>Observações</h4>
+          ${observacoes
+            .map(
+              (obs) => `
+          <div class="portal-observacao">
+            <strong>${escapeHtml(obs.titulo || "Sem título")}</strong>
+            <p>${escapeHtml(obs.descricao)}</p>
+          </div>`
+            )
+            .join("")}
+        </div>`
+    : "";
+
   return `
     <div class="portal-timeline-item portal-fade-in">
       <span class="portal-timeline-dot"></span>
       <article class="portal-service-card">
         <div class="portal-service-card-head">
-          <span class="portal-service-date">${formatDate(servico.data_servico)}</span>
+          <span class="portal-service-date">${formatDate(servico.data_servico || servico.dataServico)}</span>
           ${renderStatusBadge(servico.status)}
         </div>
         <h3>${servico.tipo}</h3>
         ${servico.descricao ? `<p class="portal-service-desc">${servico.descricao}</p>` : ""}
         <div class="portal-service-meta">
           ${servico.responsavel ? `<span><i class="fa-solid fa-user"></i> ${servico.responsavel}</span>` : ""}
-          ${valorFormatado ? `<span><i class="fa-solid fa-sack-dollar"></i> R$ ${valorFormatado}</span>` : ""}
+          <span><i class="fa-solid fa-sack-dollar"></i> ${valorFormatado ? `R$ ${valorFormatado}` : "—"}</span>
         </div>
+        ${observacoesHtml}
         <div class="portal-service-photos">
           ${fotosHtml}
         </div>
@@ -554,7 +589,15 @@ function renderServiceCard(servico) {
 }
 
 function loadTimeline(token, timelineEl) {
-  fetch(`${API_BASE_URL}/servicos`, {
+  // Usa o registro completo (serviços + fotos + observações) em vez de /servicos, que não traz observações.
+  const clienteId = getAuthClienteId(token);
+  if (!clienteId) {
+    logout();
+    window.location.href = "../../registro.html";
+    return;
+  }
+
+  fetch(`${API_BASE_URL}/clientes/${clienteId}/registro`, {
     headers: { Authorization: `Bearer ${token}` },
   })
     .then(async (response) => {

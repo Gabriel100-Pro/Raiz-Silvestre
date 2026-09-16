@@ -232,7 +232,15 @@ async function populateDashboardWithRegistro(clienteId) {
 
     const cardProximaVisita = document.getElementById("portalCardProximaVisita");
     if (cardProximaVisita) {
-      cardProximaVisita.textContent = formatDate(registro.estatisticas.proximaManutencao);
+      // Sem serviço futuro agendado, usa o próximo cuidado pendente com data >= hoje
+      // (a lista já vem ordenada por dataPrevista ASC no registro).
+      const hoje = new Date().toLocaleDateString("en-CA");
+      const proximoCuidado = (registro.proximosCuidados || []).find(
+        (c) => c.status === "pendente" && c.dataPrevista && String(c.dataPrevista).slice(0, 10) >= hoje
+      );
+      cardProximaVisita.textContent = formatDate(
+        registro.estatisticas.proximaManutencao || proximoCuidado?.dataPrevista
+      );
     }
 
     // Dados pessoais
@@ -306,9 +314,11 @@ window.RegistroAPI = {
 
 if (document.body.dataset.portalPage === "dashboard") {
   try {
-    const cliente = JSON.parse(localStorage.getItem("portalCliente") || "null");
-    if (cliente?.id && localStorage.getItem("portalToken")) {
-      populateDashboardWithRegistro(cliente.id).catch(() => {
+    const token = localStorage.getItem("portalToken");
+    // getAuthClienteId (portal.js) usa o "sub" do JWT; portalCliente.id é só fallback.
+    const clienteId = token ? getAuthClienteId(token) : null;
+    if (clienteId) {
+      populateDashboardWithRegistro(clienteId).catch(() => {
         showToast("Não foi possível carregar seus dados. Tente novamente.", "error");
       });
     }

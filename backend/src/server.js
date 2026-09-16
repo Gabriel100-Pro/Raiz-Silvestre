@@ -21,7 +21,8 @@ const { loginLimiter } = require("./middleware/rateLimiter");
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-app.use(helmet());
+// CORP "cross-origin" permite que o Portal (outra origem) carregue as imagens de /uploads.
+app.use(helmet({ crossOriginResourcePolicy: { policy: "cross-origin" } }));
 app.use(compression());
 app.use(morgan(process.env.NODE_ENV === "production" ? "combined" : "dev"));
 app.use(cors({ origin: process.env.CORS_ORIGIN || "*" }));
