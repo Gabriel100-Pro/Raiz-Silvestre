@@ -242,18 +242,6 @@ Retorna dados do cliente autenticado (dashboard simplificado).
 }
 ```
 
-#### GET `/api/clientes/cpf/:cpf`
-Busca um cliente pelo CPF (usado no login).
-
-**Response (200):**
-```json
-{
-  "id": 1,
-  "nome": "string",
-  "cpfMascarado": "123.***.***-45"
-}
-```
-
 #### GET `/api/clientes/:id`
 Retorna dados de um cliente específico.
 

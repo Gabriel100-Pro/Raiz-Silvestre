@@ -83,7 +83,6 @@ Sistema backend completo em Node.js/Express com PostgreSQL para o "Portal do Cli
    - ✅ Melhor organização
 
 4. **`backend/src/routes/clientes.js`**
-   - ✅ Novo: `GET /clientes/cpf/:cpf`
    - ✅ Novo: `GET /clientes/:id`
    - ✅ Novo: `GET /clientes/:clienteId/registro` (⭐ endpoint principal)
 
@@ -211,7 +210,6 @@ Sistema backend completo em Node.js/Express com PostgreSQL para o "Portal do Cli
 ### Clientes
 - `GET /api/clientes/me` ✅
 - `GET /api/clientes/:id` ✅
-- `GET /api/clientes/cpf/:cpf` ✅
 - `GET /api/clientes/:clienteId/registro` ⭐ **Novo - Principal**
 
 ### Serviços

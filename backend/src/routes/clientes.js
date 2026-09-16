@@ -2,7 +2,7 @@ const express = require("express");
 
 const { authMiddleware } = require("../middleware/auth");
 const { getClienteDashboardData } = require("../utils/dashboardData");
-const { createCliente, getClienteById, getClienteByCpf } = require("../controllers/clienteController");
+const { createCliente, getClienteById } = require("../controllers/clienteController");
 const { getRegistro } = require("../controllers/registroController");
 
 const router = express.Router();
@@ -19,9 +19,6 @@ router.get("/me", authMiddleware, async (req, res, next) => {
     next(error);
   }
 });
-
-// GET /api/clientes/cpf/:cpf — Buscar cliente pelo CPF (login)
-router.get("/cpf/:cpf", getClienteByCpf);
 
 // GET /api/clientes/:id — Dados de um cliente específico
 router.get("/:id", authMiddleware, getClienteById);

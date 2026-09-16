@@ -92,41 +92,7 @@ async function getClienteById(req, res, next) {
   }
 }
 
-// GET /api/clientes/cpf/:cpf — Busca cliente pelo CPF
-async function getClienteByCpf(req, res, next) {
-  try {
-    const cpf = onlyDigits(req.params.cpf);
-
-    if (!isValidCpf(cpf)) {
-      throw new HttpError(400, "CPF inválido.");
-    }
-
-    const result = await pool.query(
-      "SELECT id, nome, cpf, email, telefone, endereco FROM clientes WHERE cpf = $1 LIMIT 1",
-      [cpf]
-    );
-
-    const cliente = result.rows[0];
-
-    if (!cliente) {
-      throw new HttpError(
-        404,
-        "Não encontramos nenhum registro associado a este CPF."
-      );
-    }
-
-    res.json({
-      id: cliente.id,
-      nome: cliente.nome,
-      cpfMascarado: maskCpf(cliente.cpf),
-    });
-  } catch (error) {
-    next(error);
-  }
-}
-
 module.exports = {
   createCliente,
   getClienteById,
-  getClienteByCpf,
 };

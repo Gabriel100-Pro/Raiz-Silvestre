@@ -82,7 +82,6 @@ backend/src/utils/
 #### Clientes:
 - `GET /api/clientes/me` - Dados do cliente autenticado (simplified)
 - `GET /api/clientes/:id` - Dados de um cliente específico
-- `GET /api/clientes/cpf/:cpf` - Buscar cliente pelo CPF
 - `GET /api/clientes/:clienteId/registro` ⭐ NOVO - **Registro completo com TODOS os dados**
 
 #### Serviços:

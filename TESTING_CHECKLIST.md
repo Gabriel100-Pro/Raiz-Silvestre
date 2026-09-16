@@ -78,14 +78,6 @@ curl -H "Authorization: Bearer <token>" \
 - [ ] CPF está mascarado (XXX.***.***-XX)
 - [ ] Tem email, telefone, endereço
 
-### GET /api/clientes/cpf/52998224725
-```bash
-curl http://localhost:3001/api/clientes/cpf/52998224725
-```
-- [ ] Encontra cliente pelo CPF sem formatação
-- [ ] Retorna ID, nome, CPF mascarado
-- [ ] Status 200
-
 ### GET /api/proximos-cuidados/clientes/1
 ```bash
 curl -H "Authorization: Bearer <token>" \
