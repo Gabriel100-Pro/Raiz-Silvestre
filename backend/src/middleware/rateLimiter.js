@@ -9,4 +9,21 @@ const loginLimiter = rateLimit({
   message: { message: "Muitas tentativas de login. Tente novamente em alguns minutos." },
 });
 
-module.exports = { loginLimiter };
+// Envio de avaliações públicas: poucas por hora e por dia para cada IP.
+const avaliacaoLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000,
+  max: 5,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { message: "Muitas avaliações enviadas. Tente novamente mais tarde." },
+});
+
+const avaliacaoDiariaLimiter = rateLimit({
+  windowMs: 24 * 60 * 60 * 1000,
+  max: 12,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { message: "Limite diário de avaliações atingido. Tente novamente amanhã." },
+});
+
+module.exports = { loginLimiter, avaliacaoLimiter, avaliacaoDiariaLimiter };

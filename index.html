@@ -21,6 +21,13 @@
   />
   <link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css" />
   <script>
+    // URL pública da API (backend/). Em produção, troque pela URL do Render,
+    // ex.: "https://raiz-silvestre-api.onrender.com/api".
+    window.SiteConfig = window.SiteConfig || {
+      apiBaseUrl: "http://localhost:3001/api"
+    };
+  </script>
+  <script>
     document.documentElement.classList.add(
       window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "garden-static-mode" : "garden-animated"
     );
@@ -574,187 +581,162 @@
       </div>
     </section>
 
-    <section class="section testimonials" id="depoimentos">
-      <div class="container testimonials-inner">
-        <div class="section-heading testimonials-heading" data-aos="fade-up" data-aos-duration="900">
-          <p class="section-tag">Depoimentos</p>
-          <h2>O que nossos <span>clientes</span> dizem</h2>
-          <p>
-            A satisfação de quem confia no nosso trabalho é o que nos motiva a cuidar de cada detalhe com excelência.
-          </p>
+    <section class="section reviews" id="depoimentos" aria-labelledby="reviewsTitle">
+      <div class="container">
+        <div class="section-heading reviews-heading" data-aos="fade-up" data-aos-duration="900">
+          <h2 id="reviewsTitle">O que nossos <span>clientes</span> dizem</h2>
+          <p>Já cuidamos do seu jardim? Conte como foi sua experiência.</p>
         </div>
 
-        <div class="testimonials-carousel" aria-label="Depoimentos de clientes em movimento contínuo">
-          <div class="testimonials-track" id="testimonialsTrack">
-            <div class="testimonials-group" id="testimonialsGroup">
-            <article class="testimonial-card" data-aos="fade-up" data-aos-delay="0" tabindex="0" role="button" aria-pressed="false" aria-label="Pausar ou continuar o carrossel de depoimentos de Juliana Martins">
-            <div class="testimonial-accent testimonial-accent-top" aria-hidden="true"></div>
-            <div class="testimonial-accent testimonial-accent-bottom" aria-hidden="true"></div>
-            <div class="testimonial-quote" aria-hidden="true">
-              <i class="fa-solid fa-quote-left"></i>
+        <div class="reviews-layout">
+          <form class="review-form" id="reviewForm" novalidate>
+            <h3 class="review-form-title">Deixe sua avaliação</h3>
+            <p class="review-form-subtitle">Sua experiência pode ajudar outras pessoas.</p>
+
+            <div class="review-field">
+              <label for="reviewNome">Seu nome</label>
+              <div class="review-input-wrap">
+                <i class="fa-regular fa-user" aria-hidden="true"></i>
+                <input
+                  id="reviewNome"
+                  name="nome"
+                  type="text"
+                  placeholder="Como você quer aparecer"
+                  autocomplete="name"
+                  minlength="2"
+                  maxlength="60"
+                  required
+                  aria-describedby="reviewNomeErro"
+                />
+              </div>
+              <p class="review-error" id="reviewNomeErro" data-error-for="nome"></p>
             </div>
 
-            <div class="testimonial-rating" aria-label="Avaliação 5 de 5 estrelas">
-              <i class="fa-solid fa-star"></i>
-              <i class="fa-solid fa-star"></i>
-              <i class="fa-solid fa-star"></i>
-              <i class="fa-solid fa-star"></i>
-              <i class="fa-solid fa-star"></i>
+            <div class="review-field">
+              <label for="reviewServico">Serviço realizado</label>
+              <div class="review-input-wrap review-select-wrap">
+                <i class="fa-solid fa-seedling" aria-hidden="true"></i>
+                <select id="reviewServico" name="servico" required aria-describedby="reviewServicoErro">
+                  <option value="" selected disabled>Selecione o serviço</option>
+                  <option value="implantacao">Implantação de Jardins</option>
+                  <option value="solo">Solo e Nutrição</option>
+                  <option value="manutencao">Manutenção e Acabamento</option>
+                  <option value="projetos">Projetos Especiais</option>
+                </select>
+                <i class="fa-solid fa-chevron-down review-select-arrow" aria-hidden="true"></i>
+              </div>
+              <p class="review-error" id="reviewServicoErro" data-error-for="servico"></p>
             </div>
 
-            <p class="testimonial-text">
-              A equipe transformou completamente nosso jardim, com acabamento impecável e um atendimento muito atencioso do início ao fim.
-            </p>
+            <fieldset class="review-field review-rating" aria-describedby="reviewNotaErro">
+              <legend>Sua nota</legend>
+              <div class="review-stars" id="reviewStars">
+                <input type="radio" id="reviewNota1" name="nota" value="1" required />
+                <label for="reviewNota1"><i class="fa-solid fa-star" aria-hidden="true"></i><span class="sr-only">1 estrela</span></label>
+                <input type="radio" id="reviewNota2" name="nota" value="2" />
+                <label for="reviewNota2"><i class="fa-solid fa-star" aria-hidden="true"></i><span class="sr-only">2 estrelas</span></label>
+                <input type="radio" id="reviewNota3" name="nota" value="3" />
+                <label for="reviewNota3"><i class="fa-solid fa-star" aria-hidden="true"></i><span class="sr-only">3 estrelas</span></label>
+                <input type="radio" id="reviewNota4" name="nota" value="4" />
+                <label for="reviewNota4"><i class="fa-solid fa-star" aria-hidden="true"></i><span class="sr-only">4 estrelas</span></label>
+                <input type="radio" id="reviewNota5" name="nota" value="5" />
+                <label for="reviewNota5"><i class="fa-solid fa-star" aria-hidden="true"></i><span class="sr-only">5 estrelas</span></label>
+              </div>
+              <p class="review-error" id="reviewNotaErro" data-error-for="nota"></p>
+            </fieldset>
 
-            <div class="testimonial-person">
-              <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=160&q=80" alt="Foto de Juliana Martins" loading="lazy" />
-              <div>
-                <h3>Juliana Martins</h3>
-                <p>Residencial</p>
+            <div class="review-field">
+              <label for="reviewComentario">Seu comentário</label>
+              <div class="review-input-wrap review-textarea-wrap">
+                <i class="fa-regular fa-comment" aria-hidden="true"></i>
+                <textarea
+                  id="reviewComentario"
+                  name="comentario"
+                  rows="4"
+                  placeholder="Conte como foi o atendimento e o resultado..."
+                  minlength="10"
+                  maxlength="1000"
+                  required
+                  aria-describedby="reviewComentarioContador reviewComentarioErro"
+                ></textarea>
+              </div>
+              <div class="review-field-meta">
+                <p class="review-error" id="reviewComentarioErro" data-error-for="comentario"></p>
+                <span class="review-counter" id="reviewComentarioContador">0/1000</span>
               </div>
             </div>
-            </article>
 
-            <article class="testimonial-card" data-aos="fade-up" data-aos-delay="120" tabindex="0" role="button" aria-pressed="false" aria-label="Pausar ou continuar o carrossel de depoimentos de Ricardo Almeida">
-            <div class="testimonial-accent testimonial-accent-top" aria-hidden="true"></div>
-            <div class="testimonial-accent testimonial-accent-bottom" aria-hidden="true"></div>
-            <div class="testimonial-quote" aria-hidden="true">
-              <i class="fa-solid fa-quote-left"></i>
+            <div class="review-honeypot" aria-hidden="true">
+              <label for="reviewWebsite">Não preencha este campo</label>
+              <input id="reviewWebsite" name="website" type="text" tabindex="-1" autocomplete="off" />
             </div>
 
-            <div class="testimonial-rating" aria-label="Avaliação 5 de 5 estrelas">
-              <i class="fa-solid fa-star"></i>
-              <i class="fa-solid fa-star"></i>
-              <i class="fa-solid fa-star"></i>
-              <i class="fa-solid fa-star"></i>
-              <i class="fa-solid fa-star"></i>
+            <div class="review-field">
+              <label class="review-consent" for="reviewConsentimento">
+                <input
+                  id="reviewConsentimento"
+                  name="consentimento"
+                  type="checkbox"
+                  required
+                  aria-describedby="reviewConsentimentoErro"
+                />
+                <span>Autorizo a publicação do meu nome e comentário.</span>
+              </label>
+              <p class="review-error" id="reviewConsentimentoErro" data-error-for="consentimento"></p>
             </div>
 
-            <p class="testimonial-text">
-              Profissionalismo, pontualidade e muito cuidado com as plantas. O resultado trouxe mais vida e sofisticação ao espaço.
+            <button class="btn review-submit" id="reviewSubmit" type="submit">
+              <i class="fa-solid fa-paper-plane" aria-hidden="true"></i>
+              <span>Enviar avaliação</span>
+            </button>
+
+            <p class="review-status" id="reviewStatus" role="status" aria-live="polite"></p>
+          </form>
+
+          <div class="reviews-board">
+            <div class="reviews-board-head">
+              <h3>Experiências compartilhadas</h3>
+              <button
+                class="reviews-toggle"
+                id="reviewsToggle"
+                type="button"
+                aria-controls="reviewsViewport"
+                aria-pressed="false"
+                hidden
+              >
+                <i class="fa-solid fa-pause" aria-hidden="true"></i>
+                <span>Pausar</span>
+              </button>
+            </div>
+
+            <p class="reviews-feedback" id="reviewsLoading">Carregando avaliações…</p>
+
+            <div class="reviews-empty" id="reviewsEmpty" hidden>
+              <i class="fa-regular fa-comment" aria-hidden="true"></i>
+              <p class="reviews-empty-title">Seu comentário pode ser o primeiro.</p>
+              <p>As avaliações enviadas aparecerão aqui.</p>
+            </div>
+
+            <div class="reviews-error" id="reviewsError" hidden>
+              <p>Não foi possível carregar as avaliações agora.</p>
+              <button class="reviews-retry" id="reviewsRetry" type="button">Tentar novamente</button>
+            </div>
+
+            <div
+              class="reviews-viewport"
+              id="reviewsViewport"
+              tabindex="0"
+              role="region"
+              aria-label="Avaliações publicadas"
+              hidden
+            >
+              <div class="reviews-track" id="reviewsTrack"></div>
+            </div>
+
+            <p class="reviews-note" id="reviewsNote" hidden>
+              <span id="reviewsCount"></span>
+              Avaliações enviadas por visitantes do site e publicadas automaticamente.
             </p>
-
-            <div class="testimonial-person">
-              <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=160&q=80" alt="Foto de Ricardo Almeida" loading="lazy" />
-              <div>
-                <h3>Ricardo Almeida</h3>
-                <p>Condomínio</p>
-              </div>
-            </div>
-            </article>
-
-            <article class="testimonial-card" data-aos="fade-up" data-aos-delay="240" tabindex="0" role="button" aria-pressed="false" aria-label="Pausar ou continuar o carrossel de depoimentos de Fernanda Souza">
-            <div class="testimonial-accent testimonial-accent-top" aria-hidden="true"></div>
-            <div class="testimonial-accent testimonial-accent-bottom" aria-hidden="true"></div>
-            <div class="testimonial-quote" aria-hidden="true">
-              <i class="fa-solid fa-quote-left"></i>
-            </div>
-
-            <div class="testimonial-rating" aria-label="Avaliação 5 de 5 estrelas">
-              <i class="fa-solid fa-star"></i>
-              <i class="fa-solid fa-star"></i>
-              <i class="fa-solid fa-star"></i>
-              <i class="fa-solid fa-star"></i>
-              <i class="fa-solid fa-star"></i>
-            </div>
-
-            <p class="testimonial-text">
-              O projeto ficou elegante e muito bem pensado. A jardinagem valorizou a fachada e passou exatamente a imagem que queríamos.
-            </p>
-
-            <div class="testimonial-person">
-              <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&w=160&q=80" alt="Foto de Fernanda Souza" loading="lazy" />
-              <div>
-                <h3>Fernanda Souza</h3>
-                <p>Comercial</p>
-              </div>
-            </div>
-            </article>
-
-            <article class="testimonial-card" data-aos="fade-up" data-aos-delay="360" tabindex="0" role="button" aria-pressed="false" aria-label="Pausar ou continuar o carrossel de depoimentos de Carlos Menezes">
-            <div class="testimonial-accent testimonial-accent-top" aria-hidden="true"></div>
-            <div class="testimonial-accent testimonial-accent-bottom" aria-hidden="true"></div>
-            <div class="testimonial-quote" aria-hidden="true">
-              <i class="fa-solid fa-quote-left"></i>
-            </div>
-
-            <div class="testimonial-rating" aria-label="Avaliação 5 de 5 estrelas">
-              <i class="fa-solid fa-star"></i>
-              <i class="fa-solid fa-star"></i>
-              <i class="fa-solid fa-star"></i>
-              <i class="fa-solid fa-star"></i>
-              <i class="fa-solid fa-star"></i>
-            </div>
-
-            <p class="testimonial-text">
-              O cuidado com os detalhes fez toda a diferença. Ficou bonito, funcional e com cara de projeto premium.
-            </p>
-
-            <div class="testimonial-person">
-              <img src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=160&q=80" alt="Foto de Carlos Menezes" loading="lazy" />
-              <div>
-                <h3>Carlos Menezes</h3>
-                <p>Empresarial</p>
-              </div>
-            </div>
-            </article>
-
-            <article class="testimonial-card" data-aos="fade-up" data-aos-delay="480" tabindex="0" role="button" aria-pressed="false" aria-label="Pausar ou continuar o carrossel de depoimentos de Patrícia Lima">
-            <div class="testimonial-accent testimonial-accent-top" aria-hidden="true"></div>
-            <div class="testimonial-accent testimonial-accent-bottom" aria-hidden="true"></div>
-            <div class="testimonial-quote" aria-hidden="true">
-              <i class="fa-solid fa-quote-left"></i>
-            </div>
-
-            <div class="testimonial-rating" aria-label="Avaliação 5 de 5 estrelas">
-              <i class="fa-solid fa-star"></i>
-              <i class="fa-solid fa-star"></i>
-              <i class="fa-solid fa-star"></i>
-              <i class="fa-solid fa-star"></i>
-              <i class="fa-solid fa-star"></i>
-            </div>
-
-            <p class="testimonial-text">
-              Atendimento impecável e resultado acima do esperado. Nosso jardim ganhou presença sem perder naturalidade.
-            </p>
-
-            <div class="testimonial-person">
-              <img src="https://images.unsplash.com/photo-1488426862026-3ee34a7d66df?auto=format&fit=crop&w=160&q=80" alt="Foto de Patrícia Lima" loading="lazy" />
-              <div>
-                <h3>Patrícia Lima</h3>
-                <p>Residencial</p>
-              </div>
-            </div>
-            </article>
-
-            <article class="testimonial-card" data-aos="fade-up" data-aos-delay="600" tabindex="0" role="button" aria-pressed="false" aria-label="Pausar ou continuar o carrossel de depoimentos de Mariana Costa">
-            <div class="testimonial-accent testimonial-accent-top" aria-hidden="true"></div>
-            <div class="testimonial-accent testimonial-accent-bottom" aria-hidden="true"></div>
-            <div class="testimonial-quote" aria-hidden="true">
-              <i class="fa-solid fa-quote-left"></i>
-            </div>
-
-            <div class="testimonial-rating" aria-label="Avaliação 5 de 5 estrelas">
-              <i class="fa-solid fa-star"></i>
-              <i class="fa-solid fa-star"></i>
-              <i class="fa-solid fa-star"></i>
-              <i class="fa-solid fa-star"></i>
-              <i class="fa-solid fa-star"></i>
-            </div>
-
-            <p class="testimonial-text">
-              Um serviço sério, elegante e muito bem executado. A empresa entregou exatamente a atmosfera que imaginávamos para a área externa.
-            </p>
-
-            <div class="testimonial-person">
-              <img src="https://images.unsplash.com/photo-1544723795-3fb6469f5b39?auto=format&fit=crop&w=160&q=80" alt="Foto de Mariana Costa" loading="lazy" />
-              <div>
-                <h3>Mariana Costa</h3>
-                <p>Comercial</p>
-              </div>
-            </div>
-            </article>
-            </div>
           </div>
         </div>
       </div>
@@ -992,5 +974,6 @@
 
   <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
   <script src="script.js"></script>
+  <script src="avaliacoes.js"></script>
 </body>
 </html>

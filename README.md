@@ -61,6 +61,7 @@ cd backend
 npm install        # instala dependências
 npm run dev        # desenvolvimento (node --watch, recarrega ao salvar)
 npm start          # produção (node src/server.js)
+npm run db:migrate:avaliacoes   # cria a tabela de avaliações (sem precisar do psql)
 ```
 
 O front-end não possui build: são arquivos estáticos (HTML/CSS/JS puro).
@@ -74,8 +75,11 @@ Copie `backend/.env.example` para `backend/.env` e preencha:
 | `PORT`          | Porta da API (padrão `3001`).                                      |
 | `DATABASE_URL`  | String de conexão PostgreSQL.                                       |
 | `JWT_SECRET`    | Segredo para assinar os tokens JWT (7 dias de validade).            |
-| `CORS_ORIGIN`   | URL do front-end publicado (ou `*` em desenvolvimento).             |
+| `CORS_ORIGIN`   | URL do front-end publicado (ou `*` em desenvolvimento). Aceita várias separadas por vírgula. |
 | `NODE_ENV`      | `development` ou `production` (ativa logs de acesso detalhados).    |
+| `ADMIN_TOKEN`   | Token das rotas administrativas (inclui moderar avaliações). Vazio = bloqueadas. |
+| `AVALIACOES_HASH_SECRET` | Segredo do hash de IP usado contra reenvios. Vazio = usa `JWT_SECRET`. |
+| `TRUST_PROXY`   | `1` no Render (API atrás de proxy), para o limite de envios por IP usar o IP real. |
 
 ## Banco de dados
 
@@ -88,6 +92,53 @@ psql "$DATABASE_URL" -f backend/src/db/seed.sql   # opcional: dados de teste
 
 `schema.sql` cria `clientes`, `jardins`, `servicos` e `fotos_servico` com os
 relacionamentos (`ON DELETE CASCADE`) entre elas.
+
+## Avaliações de clientes (seção "O que nossos clientes dizem")
+
+O formulário do site envia avaliações para `POST /api/avaliacoes`; elas ficam na
+tabela `avaliacoes` do PostgreSQL e são publicadas automaticamente. O site lista
+as publicadas com `GET /api/avaliacoes` e consulta novamente a cada 30 segundos.
+
+**Rodando localmente:** o site (Live Server, porta 5501) e a API são dois
+servidores separados. Sem a API rodando, o formulário mostra "Não foi possível
+conectar ao servidor". Em um terminal, deixe a API ligada:
+
+```bash
+cd backend
+npm run dev        # API em http://localhost:3001 (teste: /api/health)
+```
+
+O `backend/.env` precisa ter `CORS_ORIGIN=http://127.0.0.1:5501` (a origem do
+Live Server) e o `DATABASE_URL` do PostgreSQL local.
+
+**Ativação:**
+
+1. Crie a tabela (uma vez, em cada banco — local e produção):
+   `cd backend && npm run db:migrate:avaliacoes`
+   (o arquivo é `backend/src/db/avaliacoes.sql`; também está no fim de `schema.sql`).
+2. Em `index.html`, ajuste `window.SiteConfig.apiBaseUrl` para a URL pública da
+   API (ex.: `https://raiz-silvestre-api.onrender.com/api`).
+3. Inclua a URL do site publicado em `CORS_ORIGIN` e defina `TRUST_PROXY=1` no Render.
+
+**Proteções:** validação no servidor (nome 2–60, comentário 10–1000 caracteres,
+nota 1–5, serviço da lista, consentimento obrigatório), comentários com links
+recusados, campo-isca e tempo mínimo de preenchimento contra robôs, limite de
+5 envios por hora e 12 por dia por IP, bloqueio de texto repetido em 24 h e chave
+de idempotência para que clique duplo ou nova tentativa não gere duplicatas.
+Nenhum IP é gravado, apenas um HMAC dele. Não existe rota pública para editar ou
+excluir avaliações.
+
+**Moderação (remover spam ou abuso):** exige `ADMIN_TOKEN` configurado.
+
+```bash
+# Listar todas (inclusive removidas)
+curl -H "X-Admin-Token: $ADMIN_TOKEN" https://<api>/api/avaliacoes/admin
+# Remover do site (o registro continua no banco com status "removida")
+curl -X DELETE -H "X-Admin-Token: $ADMIN_TOKEN" https://<api>/api/avaliacoes/<id>
+```
+
+O formulário é aberto: ele não comprova que o autor contratou o serviço, e o
+site não exibe selo de "cliente verificado".
 
 ### Cliente fictício de teste (via `seed.sql`)
 
