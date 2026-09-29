@@ -1,2 +1,5 @@
 node_modules/
 .env
+# Qualquer .env.* (ex.: .env.producao com a URL do Neon) fica fora do Git.
+.env.*
+!.env.example
