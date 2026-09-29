@@ -20,6 +20,11 @@
     href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
   />
   <link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css" />
+  <script>
+    document.documentElement.classList.add(
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "garden-static-mode" : "garden-animated"
+    );
+  </script>
 </head>
 <body>
   <header class="header">
@@ -125,16 +130,37 @@
         </div>
 
         <div class="hero-visual">
-          <img
-            class="hero-image"
-            src="./assets/img-fundo-hero.png"
-            alt="Jardim profissional com jardineiro realizando a manutenção em uma área verde"
-            width="1536"
-            height="1024"
-          />
+          <div class="garden-slot garden-slot--hero" data-garden-slot="hero">
+            <img
+              class="garden-static"
+              src="./assets/img jardim.png"
+              alt="Jardim paisagístico com árvore, banco de madeira e caminho de pedras"
+              width="1836"
+              height="1024"
+            />
+          </div>
         </div>
       </div>
     </section>
+
+    <div class="garden-layer" id="gardenLayer">
+      <div class="garden-traveler" id="gardenTraveler">
+        <div class="garden-entry">
+          <span class="garden-shadow" aria-hidden="true"></span>
+          <div class="garden-float">
+            <div class="garden-tilt">
+              <img
+                src="./assets/img jardim.png"
+                alt="Jardim paisagístico com árvore, banco de madeira e caminho de pedras"
+                width="1836"
+                height="1024"
+                decoding="async"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <section class="benefits-marquee" id="beneficios-faixa" aria-label="Diferenciais da Raiz Silvestre em movimento contínuo">
       <div class="benefits-marquee-wrapper" id="benefitsMarqueeWrapper">
@@ -212,6 +238,12 @@
 
     <section class="section sobre-premium" id="sobre">
       <div class="container sobre-container">
+        <div class="sobre-visual">
+          <div class="garden-slot garden-slot--sobre" data-garden-slot="sobre">
+            <img class="garden-static" src="./assets/img%20jardim.png" alt="" width="1536" height="1024" loading="lazy" />
+          </div>
+        </div>
+
         <div class="sobre-texto">
           <p class="sobre-rotulo">
             <i class="fa-solid fa-leaf" aria-hidden="true"></i>
@@ -239,37 +271,35 @@
               gerações, valorizando as raízes que o conectam a esse trabalho.
             </p>
           </div>
+
+          <div class="sobre-selos">
+            <div class="sobre-selo">
+              <span class="selo-icone" aria-hidden="true">
+                <i class="fa-solid fa-leaf"></i>
+              </span>
+              <span class="selo-texto">
+                <strong>Tradição familiar</strong>
+                <small>Há gerações cuidando de jardins</small>
+              </span>
+            </div>
+
+            <div class="sobre-selo">
+              <span class="selo-icone" aria-hidden="true">
+                <i class="fa-solid fa-location-dot"></i>
+              </span>
+              <span class="selo-texto">
+                <strong>Jundiaí e região</strong>
+                <small>Atendimento com confiança e dedicação</small>
+              </span>
+            </div>
+          </div>
         </div>
-
-        <figure class="sobre-imagem">
-          <img src="./assets/Img-Sobre.jpeg" alt="Equipe da Raiz Silvestre em atividade de jardinagem" loading="lazy" />
-
-          <figcaption class="sobre-selo selo-topo">
-            <span class="selo-icone" aria-hidden="true">
-              <i class="fa-solid fa-leaf"></i>
-            </span>
-            <span class="selo-texto">
-              <strong>Tradição familiar</strong>
-              <small>Há gerações cuidando de jardins</small>
-            </span>
-          </figcaption>
-
-          <figcaption class="sobre-selo selo-base">
-            <span class="selo-icone" aria-hidden="true">
-              <i class="fa-solid fa-location-dot"></i>
-            </span>
-            <span class="selo-texto">
-              <strong>Jundiaí e região</strong>
-              <small>Atendimento com confiança e dedicação</small>
-            </span>
-          </figcaption>
-        </figure>
       </div>
     </section>
 
     <section class="section services" id="servicos">
       <div class="container">
-        <div class="section-heading" data-aos="fade-up" data-aos-duration="900">
+        <div class="section-heading services-heading" data-aos="fade-up" data-aos-duration="900">
           <p class="section-tag">Serviços</p>
           <h2>Nossos Serviços</h2>
           <p>
@@ -279,19 +309,35 @@
         </div>
 
         <div class="services-grid">
-          <article class="service-card">
-            <div class="service-card-content">
-              <div class="service-card-head">
-                <div class="service-icon">
-                  <i class="fa-solid fa-seedling"></i>
-                </div>
-                <h3>Implantação de Jardins Residenciais</h3>
-              </div>
+          <article class="service-card" id="servico-implantacao">
+            <div class="service-card-media">
+              <img src="./assets/implantacao-de-jardim-3.jpg" alt="Implantação de jardins residenciais" loading="lazy" />
+            </div>
 
-              <p class="service-summary">
+            <div class="service-card-content">
+              <span class="service-icon" aria-hidden="true">
+                <i class="fa-solid fa-seedling"></i>
+              </span>
+              <h3>Implantação de Jardins</h3>
+              <p class="service-summary">Jardins sob medida para frentes, quintais, varandas e canteiros.</p>
+
+              <button
+                class="service-link"
+                type="button"
+                data-service-open="servico-implantacao"
+                aria-haspopup="dialog"
+                aria-label="Saiba mais sobre Implantação de Jardins Residenciais"
+              >
+                <span>Saiba mais</span>
+                <span class="service-link-icon" aria-hidden="true"><i class="fa-solid fa-arrow-right"></i></span>
+              </button>
+            </div>
+
+            <div class="service-details" hidden>
+              <h3 class="service-details-title">Implantação de Jardins Residenciais</h3>
+              <p class="service-details-summary">
                 Criamos jardins personalizados que valorizam seu espaço e trazem mais vida ao seu dia a dia.
               </p>
-
               <ul class="service-list">
                 <li>
                   <i class="fa-solid fa-leaf item-icon"></i>
@@ -306,31 +352,38 @@
                   <span><strong>Renovação de canteiros:</strong> revitalização de espaços antigos, substituição de mudas e forrações.</span>
                 </li>
               </ul>
-
-              <a class="service-link" href="https://wa.me/5511942842007?text=Ol%C3%A1%2C%20quero%20solicitar%20um%20or%C3%A7amento%20dos%20servi%C3%A7os%20de%20jardinagem." target="_blank" rel="noopener noreferrer">
-                <span>Saiba mais</span>
-                <span class="service-link-icon"><i class="fa-solid fa-arrow-right"></i></span>
-              </a>
-            </div>
-
-            <div class="service-card-media">
-              <img src="./assets/implantacao-de-jardim-3.jpg" alt="Implantação de jardins residenciais" loading="lazy" />
             </div>
           </article>
 
-          <article class="service-card">
-            <div class="service-card-content">
-              <div class="service-card-head">
-                <div class="service-icon">
-                  <i class="fa-solid fa-hand-holding-droplet"></i>
-                </div>
-                <h3>Preparação, Nutrição e Tratamento do Solo</h3>
-              </div>
+          <article class="service-card" id="servico-solo">
+            <div class="service-card-media">
+              <img src="./assets/Preparação, Nutrição e Tratamento do Solo.webp" alt="Preparação, nutrição e tratamento do solo" loading="lazy" />
+            </div>
 
-              <p class="service-summary">
+            <div class="service-card-content">
+              <span class="service-icon" aria-hidden="true">
+                <i class="fa-solid fa-hand-holding-droplet"></i>
+              </span>
+              <h3>Solo e Nutrição</h3>
+              <p class="service-summary">Preparo, adubação e controle de pragas para plantas saudáveis.</p>
+
+              <button
+                class="service-link"
+                type="button"
+                data-service-open="servico-solo"
+                aria-haspopup="dialog"
+                aria-label="Saiba mais sobre Preparação, Nutrição e Tratamento do Solo"
+              >
+                <span>Saiba mais</span>
+                <span class="service-link-icon" aria-hidden="true"><i class="fa-solid fa-arrow-right"></i></span>
+              </button>
+            </div>
+
+            <div class="service-details" hidden>
+              <h3 class="service-details-title">Preparação, Nutrição e Tratamento do Solo</h3>
+              <p class="service-details-summary">
                 Solo saudável é a base de um jardim bonito e duradouro. Cuidamos da estrutura e nutrição para o melhor crescimento das plantas.
               </p>
-
               <ul class="service-list">
                 <li>
                   <i class="fa-solid fa-trowel item-icon"></i>
@@ -349,31 +402,38 @@
                   <span><strong>Renovação de substrato:</strong> troca ou enriquecimento da terra de vasos e jardineiras.</span>
                 </li>
               </ul>
-
-              <a class="service-link" href="https://wa.me/5511942842007?text=Ol%C3%A1%2C%20quero%20solicitar%20um%20or%C3%A7amento%20dos%20servi%C3%A7os%20de%20jardinagem." target="_blank" rel="noopener noreferrer">
-                <span>Saiba mais</span>
-                <span class="service-link-icon"><i class="fa-solid fa-arrow-right"></i></span>
-              </a>
-            </div>
-
-            <div class="service-card-media">
-              <img src="./assets/Preparação, Nutrição e Tratamento do Solo.webp" alt="Preparação, nutrição e tratamento do solo" loading="lazy" />
             </div>
           </article>
 
-          <article class="service-card">
-            <div class="service-card-content">
-              <div class="service-card-head">
-                <div class="service-icon">
-                  <i class="fa-solid fa-scissors"></i>
-                </div>
-                <h3>Manutenção, Estética e Acabamento</h3>
-              </div>
+          <article class="service-card" id="servico-manutencao">
+            <div class="service-card-media">
+              <img src="./assets/Manutenção, Estética e Acabamento.webp" alt="Manutenção, estética e acabamento" loading="lazy" />
+            </div>
 
-              <p class="service-summary">
+            <div class="service-card-content">
+              <span class="service-icon" aria-hidden="true">
+                <i class="fa-solid fa-scissors"></i>
+              </span>
+              <h3>Manutenção e Acabamento</h3>
+              <p class="service-summary">Podas, limpeza e acabamentos para um jardim sempre bem cuidado.</p>
+
+              <button
+                class="service-link"
+                type="button"
+                data-service-open="servico-manutencao"
+                aria-haspopup="dialog"
+                aria-label="Saiba mais sobre Manutenção, Estética e Acabamento"
+              >
+                <span>Saiba mais</span>
+                <span class="service-link-icon" aria-hidden="true"><i class="fa-solid fa-arrow-right"></i></span>
+              </button>
+            </div>
+
+            <div class="service-details" hidden>
+              <h3 class="service-details-title">Manutenção, Estética e Acabamento</h3>
+              <p class="service-details-summary">
                 Manutenção completa para manter seu jardim sempre bonito, saudável e bem cuidado.
               </p>
-
               <ul class="service-list">
                 <li>
                   <i class="fa-solid fa-scissors item-icon"></i>
@@ -392,31 +452,38 @@
                   <span><strong>Limpeza pós-obra ou pós-inverno:</strong> recuperação de jardins sem cuidados por longos períodos.</span>
                 </li>
               </ul>
-
-              <a class="service-link" href="https://wa.me/5511942842007?text=Ol%C3%A1%2C%20quero%20solicitar%20um%20or%C3%A7amento%20dos%20servi%C3%A7os%20de%20jardinagem." target="_blank" rel="noopener noreferrer">
-                <span>Saiba mais</span>
-                <span class="service-link-icon"><i class="fa-solid fa-arrow-right"></i></span>
-              </a>
-            </div>
-
-            <div class="service-card-media">
-              <img src="./assets/Manutenção, Estética e Acabamento.webp" alt="Manutenção, estética e acabamento" loading="lazy" />
             </div>
           </article>
 
-          <article class="service-card">
-            <div class="service-card-content">
-              <div class="service-card-head">
-                <div class="service-icon">
-                  <i class="fa-solid fa-wheat-awn"></i>
-                </div>
-                <h3>Projetos Especiais</h3>
-              </div>
+          <article class="service-card" id="servico-projetos">
+            <div class="service-card-media">
+              <img src="./assets/Projetos Especiais.jpg" alt="Projetos especiais de jardinagem" loading="lazy" />
+            </div>
 
-              <p class="service-summary">
+            <div class="service-card-content">
+              <span class="service-icon" aria-hidden="true">
+                <i class="fa-solid fa-wheat-awn"></i>
+              </span>
+              <h3>Projetos Especiais</h3>
+              <p class="service-summary">Hortas residenciais e consultoria para escolher as plantas ideais.</p>
+
+              <button
+                class="service-link"
+                type="button"
+                data-service-open="servico-projetos"
+                aria-haspopup="dialog"
+                aria-label="Saiba mais sobre Projetos Especiais"
+              >
+                <span>Saiba mais</span>
+                <span class="service-link-icon" aria-hidden="true"><i class="fa-solid fa-arrow-right"></i></span>
+              </button>
+            </div>
+
+            <div class="service-details" hidden>
+              <h3 class="service-details-title">Projetos Especiais</h3>
+              <p class="service-details-summary">
                 Projetos personalizados para transformar seu espaço com funcionalidade, beleza e harmonia.
               </p>
-
               <ul class="service-list">
                 <li>
                   <i class="fa-solid fa-carrot item-icon"></i>
@@ -427,19 +494,46 @@
                   <span><strong>Consultoria de plantas:</strong> atendimento online ou presencial para indicar as espécies ideais para cada ambiente.</span>
                 </li>
               </ul>
-
-              <a class="service-link" href="https://wa.me/5511942842007?text=Ol%C3%A1%2C%20quero%20solicitar%20um%20or%C3%A7amento%20dos%20servi%C3%A7os%20de%20jardinagem." target="_blank" rel="noopener noreferrer">
-                <span>Saiba mais</span>
-                <span class="service-link-icon"><i class="fa-solid fa-arrow-right"></i></span>
-              </a>
-            </div>
-
-            <div class="service-card-media">
-              <img src="./assets/Projetos Especiais.jpg" alt="Projetos especiais de jardinagem" loading="lazy" />
             </div>
           </article>
         </div>
+
+        <div class="services-cta">
+          <a href="#contato" class="btn services-cta-btn">
+            <i class="fa-solid fa-leaf" aria-hidden="true"></i>
+            <span>Solicitar orçamento</span>
+          </a>
+        </div>
       </div>
+
+      <dialog class="service-modal" id="serviceModal" aria-labelledby="serviceModalTitle">
+        <div class="service-modal-panel">
+          <button class="service-modal-close" type="button" aria-label="Fechar detalhes do serviço">
+            <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+          </button>
+
+          <div class="service-modal-media">
+            <img id="serviceModalImage" src="data:," alt="" />
+          </div>
+
+          <div class="service-modal-body">
+            <p class="section-tag">Serviço</p>
+            <h3 class="service-modal-title" id="serviceModalTitle" tabindex="-1"></h3>
+            <div class="service-modal-content" id="serviceModalContent"></div>
+
+            <a
+              class="btn service-modal-cta"
+              id="serviceModalCta"
+              href="https://wa.me/5511942842007?text=Ol%C3%A1%2C%20quero%20solicitar%20um%20or%C3%A7amento%20dos%20servi%C3%A7os%20de%20jardinagem."
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <i class="fa-brands fa-whatsapp" aria-hidden="true"></i>
+              <span>Solicitar orçamento</span>
+            </a>
+          </div>
+        </div>
+      </dialog>
     </section>
 
     <section class="section gallery" id="galeria">
