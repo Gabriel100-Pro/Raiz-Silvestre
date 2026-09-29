@@ -1,6 +1,6 @@
 const crypto = require("crypto");
 
-const { pool } = require("../db");
+const { pool, traduzirErroBanco } = require("../db");
 const { HttpError } = require("../middleware/errorHandler");
 const {
   validarAvaliacao,
@@ -10,6 +10,10 @@ const {
 } = require("../utils/avaliacoes");
 
 const LIMITE_LISTAGEM = 60;
+// Limites por IP contados no próprio banco: valem mesmo com várias instâncias
+// serverless, onde um contador em memória seria zerado a cada execução.
+const LIMITE_POR_HORA = 5;
+const LIMITE_POR_DIA = 12;
 const COLUNAS_PUBLICAS = "id, nome_publico, servico, nota, comentario, criado_em";
 
 // Guarda apenas um HMAC do IP, suficiente para detectar reenvios sem armazenar o IP.
@@ -33,7 +37,7 @@ async function listarAvaliacoes(req, res, next) {
     res.set("Cache-Control", "no-store");
     res.json({ avaliacoes: result.rows.map(formatarAvaliacao) });
   } catch (error) {
-    next(error);
+    next(traduzirErroBanco(error));
   }
 }
 
@@ -70,6 +74,23 @@ async function criarAvaliacao(req, res, next) {
       throw new HttpError(409, "Esta avaliação já foi enviada.");
     }
 
+    const envios = await pool.query(
+      `SELECT
+         COUNT(*) FILTER (WHERE criado_em > NOW() - INTERVAL '1 hour') AS ultima_hora,
+         COUNT(*) AS ultimo_dia
+       FROM avaliacoes
+       WHERE ip_hash = $1 AND criado_em > NOW() - INTERVAL '24 hours'`,
+      [ipHash]
+    );
+
+    if (Number(envios.rows[0].ultima_hora) >= LIMITE_POR_HORA) {
+      throw new HttpError(429, "Muitas avaliações enviadas. Tente novamente mais tarde.");
+    }
+
+    if (Number(envios.rows[0].ultimo_dia) >= LIMITE_POR_DIA) {
+      throw new HttpError(429, "Limite diário de avaliações atingido. Tente novamente amanhã.");
+    }
+
     const inserida = await pool.query(
       `INSERT INTO avaliacoes (nome_publico, servico, nota, comentario, consentimento, idempotency_key, ip_hash)
        VALUES ($1, $2, $3, $4, TRUE, $5, $6)
@@ -90,7 +111,7 @@ async function criarAvaliacao(req, res, next) {
 
     res.status(200).json({ avaliacao: formatarAvaliacao(concorrente.rows[0]), repetida: true });
   } catch (error) {
-    next(error);
+    next(traduzirErroBanco(error));
   }
 }
 
@@ -113,7 +134,7 @@ async function listarAvaliacoesAdmin(req, res, next) {
       })),
     });
   } catch (error) {
-    next(error);
+    next(traduzirErroBanco(error));
   }
 }
 
@@ -141,11 +162,36 @@ async function removerAvaliacao(req, res, next) {
 
     res.json({ message: "Avaliação removida do site.", id: result.rows[0].id });
   } catch (error) {
-    next(error);
+    next(traduzirErroBanco(error));
   }
 }
 
+// GET /api/health — Diagnóstico sem segredos: API no ar, banco acessível e tabela criada
+async function verificarSaude(req, res) {
+  const resultado = { status: "ok", banco: "ok", avaliacoes: "ok" };
+
+  try {
+    const tabela = await pool.query("SELECT to_regclass('public.avaliacoes') AS tabela");
+
+    if (!tabela.rows[0].tabela) {
+      resultado.avaliacoes = "tabela_ausente";
+    }
+  } catch (error) {
+    traduzirErroBanco(error);
+    resultado.banco = process.env.DATABASE_URL || process.env.POSTGRES_URL ? "indisponivel" : "nao_configurado";
+    resultado.avaliacoes = "indisponivel";
+  }
+
+  if (resultado.banco !== "ok" || resultado.avaliacoes !== "ok") {
+    resultado.status = "degradado";
+  }
+
+  res.set("Cache-Control", "no-store");
+  res.status(resultado.status === "ok" ? 200 : 503).json(resultado);
+}
+
 module.exports = {
+  verificarSaude,
   listarAvaliacoes,
   criarAvaliacao,
   listarAvaliacoesAdmin,

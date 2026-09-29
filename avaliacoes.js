@@ -7,7 +7,7 @@
     return;
   }
 
-  const API_BASE_URL = String(window.SiteConfig?.apiBaseUrl || "http://localhost:3001/api").replace(/\/+$/, "");
+  const API_BASE_URL = String(window.SiteConfig?.apiBaseUrl || "/api").replace(/\/+$/, "");
   const ENDPOINT = `${API_BASE_URL}/avaliacoes`;
   const POLL_INTERVAL_MS = 30000;
   const REQUEST_TIMEOUT_MS = 15000;
@@ -35,6 +35,7 @@
   const emptyEl = document.getElementById("reviewsEmpty");
   const errorEl = document.getElementById("reviewsError");
   const retryButton = document.getElementById("reviewsRetry");
+  const loadErrorText = errorEl?.querySelector("p");
   const viewport = document.getElementById("reviewsViewport");
   const track = document.getElementById("reviewsTrack");
   const noteEl = document.getElementById("reviewsNote");
@@ -69,15 +70,19 @@
 
     try {
       const response = await fetch(url, { ...options, signal: controller.signal });
+      // Uma regra de rewrite ou página 404 pode devolver HTML no lugar da API.
+      const isJson = (response.headers.get("content-type") || "").includes("application/json");
       let body = null;
 
-      try {
-        body = await response.json();
-      } catch (_error) {
-        body = null;
+      if (isJson) {
+        try {
+          body = await response.json();
+        } catch (_error) {
+          body = null;
+        }
       }
 
-      return { response, body };
+      return { response, body, isJson };
     } finally {
       window.clearTimeout(timeout);
     }
@@ -214,6 +219,31 @@
     startedAt = Date.now();
   }
 
+  const MESSAGES = {
+    network: "Não foi possível conectar ao servidor de avaliações.",
+    timeout: "O servidor de avaliações demorou demais para responder.",
+    notFound: "O serviço de avaliações não foi encontrado neste endereço.",
+    unavailable: "O serviço de avaliações está temporariamente indisponível.",
+  };
+
+  // Classifica a falha: rede/tempo esgotado, rota inexistente (ou HTML no lugar
+  // da API), serviço indisponível (ex.: banco fora do ar) ou erro do servidor.
+  function describeFailure(result, error) {
+    if (!result) {
+      return error?.name === "AbortError" ? MESSAGES.timeout : MESSAGES.network;
+    }
+
+    if (!result.isJson || result.response.status === 404) {
+      return MESSAGES.notFound;
+    }
+
+    if (result.response.status === 503) {
+      return result.body?.message || MESSAGES.unavailable;
+    }
+
+    return null;
+  }
+
   const statusMessages = {
     429: "Muitas avaliações enviadas a partir desta conexão. Tente novamente mais tarde.",
     500: "O servidor não conseguiu salvar sua avaliação. Seus dados foram mantidos; tente novamente.",
@@ -240,7 +270,7 @@
     setStatus("");
 
     try {
-      const { response, body } = await request(ENDPOINT, {
+      const result = await request(ENDPOINT, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -251,6 +281,7 @@
         }),
       });
 
+      const { response, body } = result;
       const saved = body?.avaliacao;
 
       // Sucesso só depois da confirmação do banco (201 criado ou 200 já gravado).
@@ -270,13 +301,17 @@
         idempotencyKey = createKey();
       }
 
+      const failure = describeFailure(result);
+
       setStatus(
-        body?.message || statusMessages[response.status] || statusMessages[500],
+        failure
+          ? `${failure} Seus dados foram mantidos; tente novamente em instantes.`
+          : body?.message || statusMessages[response.status] || statusMessages[500],
         "error"
       );
-    } catch (_error) {
+    } catch (error) {
       setStatus(
-        "Não foi possível conectar ao servidor. Seus dados foram mantidos; verifique a conexão e tente novamente.",
+        `${describeFailure(null, error)} Seus dados foram mantidos; verifique a conexão e tente novamente.`,
         "error"
       );
     } finally {
@@ -625,8 +660,11 @@
       showState("loading");
     }
 
+    let result = null;
+
     try {
-      const { response, body } = await request(ENDPOINT, { headers: { Accept: "application/json" } });
+      result = await request(ENDPOINT, { headers: { Accept: "application/json" } });
+      const { response, body } = result;
 
       if (!response.ok || !Array.isArray(body?.avaliacoes)) {
         throw new Error(`HTTP ${response.status}`);
@@ -638,9 +676,11 @@
       if (body.avaliacoes.length === 0) {
         showState("empty");
       }
-    } catch (_error) {
+    } catch (error) {
       // Numa atualização periódica que falhe, mantém os cards já exibidos.
       if (!hasLoaded) {
+        const message = result ? describeFailure(result) : describeFailure(null, error);
+        loadErrorText.textContent = message || "Não foi possível carregar as avaliações agora.";
         showState("error");
       }
     } finally {

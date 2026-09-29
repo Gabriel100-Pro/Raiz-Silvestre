@@ -1,0 +1,12 @@
+{
+  "name": "raiz-silvestre-site",
+  "private": true,
+  "description": "Site estático + Vercel Functions de avaliações (api/).",
+  "engines": {
+    "node": "22.x"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "pg": "^8.12.0"
+  }
+}

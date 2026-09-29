@@ -21,10 +21,14 @@
   />
   <link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css" />
   <script>
-    // URL pública da API (backend/). Em produção, troque pela URL do Render,
-    // ex.: "https://raiz-silvestre-api.onrender.com/api".
+    // Endereço da API de avaliações.
+    // - Publicado (Vercel): mesma origem, "/api" (Vercel Functions da pasta api/).
+    // - Desenvolvimento (Live Server em localhost/127.0.0.1): backend Express local
+    //   iniciado com "cd backend && npm run dev".
     window.SiteConfig = window.SiteConfig || {
-      apiBaseUrl: "http://localhost:3001/api"
+      apiBaseUrl: ["localhost", "127.0.0.1"].includes(window.location.hostname)
+        ? "http://localhost:3001/api"
+        : "/api"
     };
   </script>
   <script>

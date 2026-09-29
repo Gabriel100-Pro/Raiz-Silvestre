@@ -111,14 +111,48 @@ npm run dev        # API em http://localhost:3001 (teste: /api/health)
 O `backend/.env` precisa ter `CORS_ORIGIN=http://127.0.0.1:5501` (a origem do
 Live Server) e o `DATABASE_URL` do PostgreSQL local.
 
-**Ativação:**
+**Produção (Vercel):** a pasta `api/` na raiz vira Vercel Functions no mesmo
+domínio do site (`/api/avaliacoes`, `/api/health`), usando o mesmo controller do
+backend (`backend/src/avaliacoesApp.js`). No site publicado o navegador chama
+`/api` (caminho relativo); só em `localhost`/`127.0.0.1` ele usa a API local na
+porta 3001. O banco precisa ser um PostgreSQL hospedado — o PostgreSQL do seu
+computador não é acessível pela Vercel.
 
-1. Crie a tabela (uma vez, em cada banco — local e produção):
-   `cd backend && npm run db:migrate:avaliacoes`
-   (o arquivo é `backend/src/db/avaliacoes.sql`; também está no fim de `schema.sql`).
-2. Em `index.html`, ajuste `window.SiteConfig.apiBaseUrl` para a URL pública da
-   API (ex.: `https://raiz-silvestre-api.onrender.com/api`).
-3. Inclua a URL do site publicado em `CORS_ORIGIN` e defina `TRUST_PROXY=1` no Render.
+**Ativação em produção (uma vez):**
+
+1. Crie um PostgreSQL hospedado. Na Vercel: projeto → **Storage** →
+   **Create Database** → **Neon (Postgres)** → conecte ao projeto marcando o
+   ambiente **Production**. Isso cria a variável `DATABASE_URL` no projeto.
+   (Outro provedor, como Supabase, também serve: copie a URL de conexão
+   *pooled* com `sslmode=require`.)
+2. Em **Settings → Environment Variables** (ambiente **Production**), confira ou
+   crie:
+   - `DATABASE_URL` — obrigatória (criada no passo 1).
+   - `AVALIACOES_HASH_SECRET` — obrigatória; um valor aleatório longo.
+   - `PG_POOL_MAX` — recomendado `1`.
+   - `ADMIN_TOKEN` — opcional; só se for moderar avaliações.
+   O arquivo `backend/.env` do seu computador **não** vai para a Vercel.
+3. Crie a tabela no banco de produção e copie as avaliações já existentes no
+   banco local (nada é apagado; pode repetir sem duplicar). No PowerShell:
+
+   ```powershell
+   cd backend
+   $env:DESTINO_DATABASE_URL = "<DATABASE_URL de produção>"
+   $env:ORIGEM_DATABASE_URL  = "<DATABASE_URL local, do backend/.env>"
+   npm run db:copiar-avaliacoes
+   ```
+
+   (Sem avaliações locais para copiar, basta criar a tabela:
+   `$env:DATABASE_URL = "<produção>"; npm run db:migrate:avaliacoes`.)
+4. Faça um novo deploy (**Deployments → Redeploy**) — variáveis novas só valem
+   em deploys feitos depois delas.
+5. Teste: `https://<seu-site>/api/health` deve responder
+   `{"status":"ok","banco":"ok","avaliacoes":"ok"}`. Se vier `nao_configurado`,
+   falta `DATABASE_URL`; `tabela_ausente`, falta o passo 3; `indisponivel`, a
+   URL/senha do banco está errada (detalhes em **Logs** do projeto na Vercel).
+
+O GitHub Pages só hospeda arquivos estáticos: lá o site abre, mas a seção de
+avaliações não funciona. Use o endereço da Vercel.
 
 **Proteções:** validação no servidor (nome 2–60, comentário 10–1000 caracteres,
 nota 1–5, serviço da lista, consentimento obrigatório), comentários com links
@@ -162,18 +196,17 @@ site não exibe selo de "cliente verificado".
    `psql` local ou o console SQL do provedor.
 6. Após o deploy, teste `GET https://<seu-servico>.onrender.com/api/health`.
 
-## Deploy do front-end (Netlify ou Vercel)
+## Deploy do site (Vercel)
 
-1. Suba o repositório no GitHub.
-2. **Netlify:** "Add new site" → "Import from Git" → selecione o repositório.
-   - Build command: (vazio, é estático)
-   - Publish directory: `.` (raiz do projeto, onde está `index.html`)
-   - O arquivo `404.html` na raiz já é reconhecido automaticamente.
-3. **Vercel:** "New Project" → importe o repositório → Framework Preset:
-   "Other" → Output Directory: `.`.
-4. Após publicar, atualize `API_BASE_URL` em `portal/assets/portal.js` para a
-   URL pública da API no Render (ex.: `https://raiz-silvestre-api.onrender.com/api`).
-5. Atualize `CORS_ORIGIN` no backend para a URL final do front-end publicado.
+1. "New Project" → importe o repositório → Framework Preset: "Other" →
+   Output Directory: `.` (raiz, onde está `index.html`). Sem build command.
+2. A Vercel instala as dependências do `package.json` da raiz (`express`, `pg`)
+   para as funções da pasta `api/`. As dependências de `backend/` não são usadas lá.
+3. Configure o banco e as variáveis conforme "Ativação em produção" na seção de
+   avaliações acima.
+4. O Portal do Cliente (`portal/`) continua dependendo do backend completo no
+   Render: atualize `API_BASE_URL` em `portal/assets/portal.js` para a URL pública
+   dele e inclua a URL do site em `CORS_ORIGIN`.
 
 ## Checklist final de funcionamento
 
