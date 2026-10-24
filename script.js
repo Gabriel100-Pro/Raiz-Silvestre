@@ -346,217 +346,160 @@ if (orcamentoForm) {
   });
 }
 
-const gardenLayer = document.getElementById("gardenLayer");
-const gardenTraveler = document.getElementById("gardenTraveler");
-const gardenHeroSlot = document.querySelector('[data-garden-slot="hero"]');
-const gardenSobreSlot = document.querySelector('[data-garden-slot="sobre"]');
-const gardenMain = document.querySelector("main");
+const siteHeader = document.getElementById("siteHeader");
+const heroSection = document.getElementById("hero");
+const heroVideo = document.getElementById("heroVideo");
+const heroTitle = document.getElementById("heroTitle");
+const heroMotionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
 
-if (gardenLayer && gardenTraveler && gardenHeroSlot && gardenSobreSlot && gardenMain) {
-  const root = document.documentElement;
-  const gardenTilt = gardenTraveler.querySelector(".garden-tilt");
-  const gardenImage = gardenTraveler.querySelector("img");
-  const reduceMotionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
-  const finePointerQuery = window.matchMedia("(hover: hover) and (pointer: fine)");
-  const maxTiltX = 6;
-  const maxTiltY = 9;
-  let metrics = null;
-  let lastProgress = -1;
-  let scrollFrame = 0;
-  let tiltFrame = 0;
-  const tiltTarget = { x: 0, y: 0 };
-  const tiltCurrent = { x: 0, y: 0 };
+// Barra do cabeçalho: fica mais opaca e um pouco mais baixa após rolar.
+if (siteHeader) {
+  let headerFrame = 0;
 
-  const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
-  const lerp = (from, to, t) => from + (to - from) * t;
-  const easeInOutCubic = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
-  const smoothstep = (t) => t * t * (3 - 2 * t);
-  const isAnimated = () => root.classList.contains("garden-animated");
-
-  const render = () => {
-    scrollFrame = 0;
-
-    if (!metrics) {
-      return;
-    }
-
-    const { from, to, start, end } = metrics;
-    const progress = clamp((window.scrollY - start) / (end - start), 0, 1);
-
-    if (progress === lastProgress) {
-      return;
-    }
-
-    lastProgress = progress;
-
-    // X e escala aceleram no meio do percurso; Y usa smoothstep para que, nas
-    // pontas, o jardim acompanhe a página sem trancos ao entrar/sair do trajeto.
-    const eased = easeInOutCubic(progress);
-    const x = lerp(from.x, to.x, eased);
-    const y = lerp(from.y, to.y, smoothstep(progress));
-    const scale = lerp(1, to.width / from.width, eased);
-
-    gardenTraveler.style.transform = `translate3d(${x}px, ${y}px, 0) scale(${scale})`;
-    gardenTraveler.classList.toggle("is-resting", progress < 0.001 || progress > 0.999);
+  const updateHeader = () => {
+    headerFrame = 0;
+    siteHeader.classList.toggle("is-scrolled", window.scrollY > 24);
   };
 
-  const requestRender = () => {
-    if (!scrollFrame) {
-      scrollFrame = window.requestAnimationFrame(render);
+  window.addEventListener(
+    "scroll",
+    () => {
+      if (!headerFrame) {
+        headerFrame = window.requestAnimationFrame(updateHeader);
+      }
+    },
+    { passive: true }
+  );
+  updateHeader();
+}
+
+// Vídeo de fundo: só toca com a hero visível e sem pedido de movimento reduzido.
+if (heroVideo && heroSection) {
+  let heroVisible = true;
+
+  const syncVideo = () => {
+    if (heroVisible && !heroMotionQuery.matches) {
+      const playing = heroVideo.play();
+
+      if (playing && typeof playing.catch === "function") {
+        playing.catch(() => {});
+      }
+    } else {
+      heroVideo.pause();
     }
   };
 
-  const measure = () => {
-    if (!isAnimated()) {
-      metrics = null;
-      return;
-    }
-
-    const scrollY = window.scrollY;
-    const viewportHeight = root.clientHeight;
-    const mainRect = gardenMain.getBoundingClientRect();
-    const heroRect = gardenHeroSlot.getBoundingClientRect();
-    const sobreRect = gardenSobreSlot.getBoundingClientRect();
-
-    if (!heroRect.width || !sobreRect.width) {
-      return;
-    }
-
-    const heroCenter = heroRect.top + scrollY + heroRect.height / 2;
-    const sobreCenter = sobreRect.top + scrollY + sobreRect.height / 2;
-    const start = Math.max(0, heroCenter - viewportHeight / 2);
-    const end = Math.max(start + 1, sobreCenter - viewportHeight / 2);
-
-    metrics = {
-      from: { x: heroRect.left - mainRect.left, y: heroRect.top - mainRect.top, width: heroRect.width },
-      to: { x: sobreRect.left - mainRect.left, y: sobreRect.top - mainRect.top, width: sobreRect.width },
-      start,
-      end
-    };
-
-    // A camada vai até o fim da segunda seção, com folga para flutuação e sombra.
-    gardenLayer.style.height = `${sobreRect.bottom - mainRect.top + sobreRect.height * 0.25}px`;
-    gardenTraveler.style.width = `${heroRect.width}px`;
-    root.style.setProperty("--garden-entry-x", `${Math.ceil(window.innerWidth - heroRect.left + 24)}px`);
-
-    lastProgress = -1;
-    render();
-    gardenTraveler.classList.add("is-ready");
-  };
-
-  // A entrada lateral só acontece se a página abrir no topo.
-  if (window.scrollY > 40) {
-    root.classList.add("garden-skip-entry");
+  if ("IntersectionObserver" in window) {
+    new IntersectionObserver(([entry]) => {
+      heroVisible = entry.isIntersecting;
+      // Também congela as animações CSS da hero enquanto ela está fora da tela.
+      heroSection.classList.toggle("is-paused", !heroVisible);
+      syncVideo();
+    }).observe(heroSection);
   }
 
-  const tiltEnabled = () => isAnimated() && finePointerQuery.matches && !reduceMotionQuery.matches;
+  heroMotionQuery.addEventListener?.("change", syncVideo);
+  syncVideo();
+}
 
-  const applyTilt = () => {
-    tiltCurrent.x += (tiltTarget.x - tiltCurrent.x) * 0.08;
-    tiltCurrent.y += (tiltTarget.y - tiltCurrent.y) * 0.08;
+// Parallax: cada camada da hero acompanha o mouse numa intensidade própria
+// (data-depth), o que dá a impressão de a raiz estar suspensa no ambiente.
+if (heroSection) {
+  const depthLayers = Array.from(heroSection.querySelectorAll("[data-depth]")).map((element) => ({
+    element,
+    depth: Number(element.dataset.depth) || 0
+  }));
+  const parallaxQuery = window.matchMedia("(hover: hover) and (pointer: fine)");
+  const target = { x: 0, y: 0 };
+  const current = { x: 0, y: 0 };
+  let parallaxFrame = 0;
 
-    const settled =
-      Math.abs(tiltTarget.x - tiltCurrent.x) < 0.01 && Math.abs(tiltTarget.y - tiltCurrent.y) < 0.01;
+  const applyParallax = () => {
+    current.x += (target.x - current.x) * 0.055;
+    current.y += (target.y - current.y) * 0.055;
+
+    const settled = Math.abs(target.x - current.x) < 0.001 && Math.abs(target.y - current.y) < 0.001;
 
     if (settled) {
-      tiltCurrent.x = tiltTarget.x;
-      tiltCurrent.y = tiltTarget.y;
+      current.x = target.x;
+      current.y = target.y;
     }
 
-    gardenTilt.style.transform =
-      tiltCurrent.x === 0 && tiltCurrent.y === 0
-        ? ""
-        : `rotateX(${tiltCurrent.x.toFixed(3)}deg) rotateY(${tiltCurrent.y.toFixed(3)}deg)`;
-
-    tiltFrame = settled ? 0 : window.requestAnimationFrame(applyTilt);
-  };
-
-  const requestTilt = () => {
-    if (!tiltFrame) {
-      tiltFrame = window.requestAnimationFrame(applyTilt);
-    }
-  };
-
-  const resetTilt = () => {
-    tiltTarget.x = 0;
-    tiltTarget.y = 0;
-    requestTilt();
-  };
-
-  if (gardenTilt) {
-    gardenTraveler.addEventListener("pointermove", (event) => {
-      if (event.pointerType !== "mouse" || !tiltEnabled()) {
-        return;
-      }
-
-      const rect = gardenTraveler.getBoundingClientRect();
-      const offsetX = clamp((event.clientX - rect.left) / rect.width, 0, 1) - 0.5;
-      const offsetY = clamp((event.clientY - rect.top) / rect.height, 0, 1) - 0.5;
-
-      tiltTarget.x = -offsetY * 2 * maxTiltX;
-      tiltTarget.y = offsetX * 2 * maxTiltY;
-      requestTilt();
+    depthLayers.forEach(({ element, depth }) => {
+      const x = (current.x * depth * 22).toFixed(2);
+      const y = (current.y * depth * 12).toFixed(2);
+      element.style.transform = `translate3d(${x}px, ${y}px, 0)`;
     });
 
-    gardenTraveler.addEventListener("pointerleave", resetTilt);
-  }
-
-  const handleMotionChange = () => {
-    root.classList.toggle("garden-animated", !reduceMotionQuery.matches);
-    root.classList.toggle("garden-static-mode", reduceMotionQuery.matches);
-    resetTilt();
-    measure();
+    parallaxFrame = settled ? 0 : window.requestAnimationFrame(applyParallax);
   };
 
-  reduceMotionQuery.addEventListener?.("change", handleMotionChange);
-  finePointerQuery.addEventListener?.("change", resetTilt);
+  const requestParallax = () => {
+    if (!parallaxFrame) {
+      parallaxFrame = window.requestAnimationFrame(applyParallax);
+    }
+  };
 
-  window.addEventListener("scroll", requestRender, { passive: true });
-  window.addEventListener("resize", measure);
-  window.addEventListener("load", measure);
-
-  const startEntry = () => {
-    if (gardenTraveler.classList.contains("is-loaded")) {
+  const handleParallaxMove = (event) => {
+    if (event.pointerType !== "mouse") {
       return;
     }
 
-    // Mantém a sequência (textos primeiro, jardim depois) descontando o tempo
-    // que a imagem levou para carregar.
-    const entryDelay = Math.round(Math.max(0, 1250 - performance.now()));
-    root.style.setProperty("--garden-entry-delay", `${entryDelay}ms`);
-    root.style.setProperty("--garden-float-delay", `${entryDelay + 1700}ms`);
-    gardenTraveler.classList.add("is-loaded");
-    measure();
+    const rect = heroSection.getBoundingClientRect();
+    target.x = ((event.clientX - rect.left) / rect.width - 0.5) * 2;
+    target.y = ((event.clientY - rect.top) / rect.height - 0.5) * 2;
+    requestParallax();
   };
 
-  if (gardenImage) {
-    const imageReady = gardenImage.complete
-      ? Promise.resolve()
-      : new Promise((resolve) => {
-          gardenImage.addEventListener("load", resolve, { once: true });
-          gardenImage.addEventListener("error", resolve, { once: true });
-        });
+  const handleParallaxLeave = () => {
+    target.x = 0;
+    target.y = 0;
+    requestParallax();
+  };
 
-    imageReady
-      .then(() => (gardenImage.decode ? gardenImage.decode() : undefined))
-      .catch(() => {})
-      .then(startEntry);
-  } else {
-    startEntry();
-  }
+  // Liga os ouvintes só quando há mouse e movimento permitido.
+  const syncParallax = () => {
+    const enabled = parallaxQuery.matches && !heroMotionQuery.matches;
 
-  if (document.fonts && document.fonts.ready) {
-    document.fonts.ready.then(measure).catch(() => {});
-  }
+    heroSection.removeEventListener("pointermove", handleParallaxMove);
+    heroSection.removeEventListener("pointerleave", handleParallaxLeave);
 
-  if ("ResizeObserver" in window) {
-    const gardenResizeObserver = new ResizeObserver(() => measure());
-    gardenResizeObserver.observe(gardenHeroSlot);
-    gardenResizeObserver.observe(gardenSobreSlot);
-    gardenResizeObserver.observe(gardenMain);
-  }
+    if (enabled) {
+      heroSection.addEventListener("pointermove", handleParallaxMove);
+      heroSection.addEventListener("pointerleave", handleParallaxLeave);
+    } else {
+      handleParallaxLeave();
+    }
+  };
 
-  measure();
+  parallaxQuery.addEventListener?.("change", syncParallax);
+  heroMotionQuery.addEventListener?.("change", syncParallax);
+  syncParallax();
+}
+
+// Título: "Raiz Silvestre" se transforma em "Seu jardim, uma nova forma de
+// viver." com o mouse por cima; no toque, cada toque alterna as frases.
+// A transição em si é CSS (.is-alt); aqui só se liga e desliga a classe.
+if (heroTitle) {
+  const setAlt = (isAlt) => heroTitle.classList.toggle("is-alt", isAlt);
+
+  heroTitle.addEventListener("pointerenter", (event) => {
+    if (event.pointerType === "mouse") {
+      setAlt(true);
+    }
+  });
+
+  heroTitle.addEventListener("pointerleave", (event) => {
+    if (event.pointerType === "mouse") {
+      setAlt(false);
+    }
+  });
+
+  heroTitle.addEventListener("pointerup", (event) => {
+    if (event.pointerType !== "mouse") {
+      setAlt(!heroTitle.classList.contains("is-alt"));
+    }
+  });
 }
 
 if (typeof AOS !== "undefined") {

@@ -1,2 +1,9 @@
 node_modules/
 .vercel/
+
+# Modelo 3D original do Meshy (326 MB, acima do limite do GitHub).
+# O site usa a versão otimizada em assets/models/arvore-jardim.glb.
+assets/Meshy_AI_Create_a_realistic_3D_1008204823_texture.glb
+# Modelo 3D "Rooted Radiance" original (85 MB); o site usa
+# assets/models/jardim-rooted-radiance.glb.
+assets/Meshy_AI_Rooted_Radiance_1009222228_texture.glb

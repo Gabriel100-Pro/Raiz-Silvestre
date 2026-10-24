@@ -11,7 +11,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link
-    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Inter:wght@400;500;600;700&display=swap"
     rel="stylesheet"
   />
   <link rel="stylesheet" href="style.css" />
@@ -31,147 +31,160 @@
         : "/api"
     };
   </script>
-  <script>
-    document.documentElement.classList.add(
-      window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "garden-static-mode" : "garden-animated"
-    );
-  </script>
 </head>
 <body>
-  <header class="header">
-    <div class="container nav header-inner">
-      <a class="brand" href="#hero" aria-label="Raiz Silvestre, voltar ao início">
-        <img src="./assets/ChatGPT Image 30 de jul. de 2026, 22_24_22.png" alt="Raiz Silvestre" />
-        <span class="brand-copy">
-          <strong>Raiz Silvestre</strong>
-          <small>JARDINAGEM • PAISAGISMO • MANUTENÇÃO</small>
+  <header class="site-nav" id="siteHeader">
+    <div class="site-nav-bar">
+      <a class="site-nav-brand" href="#hero" aria-label="Raiz Silvestre, voltar ao início">
+        <span class="logo-r">
+          <img src="./assets/ChatGPT%20Image%2030%20de%20jul.%20de%202026%2C%2022_24_22.png" alt="" width="1536" height="1024" />
         </span>
       </a>
 
-      <nav class="menu header-menu" id="menu">
+      <nav class="site-nav-links" id="menu" aria-label="Navegação principal">
         <a href="#sobre">Sobre</a>
         <a href="#servicos">Serviços</a>
         <a href="#galeria">Galeria</a>
         <a href="#contato">Orçamento</a>
-        <a href="registro.html" class="nav-registro-btn">
-          <i class="fa-solid fa-user"></i>
-          <span>Seu Registro</span>
-        </a>
         <a
-          class="header-menu-cta-mobile"
+          class="site-nav-links-cta"
           href="https://wa.me/5511942842007?text=Ol%C3%A1%2C%20gostaria%20de%20solicitar%20um%20or%C3%A7amento."
           target="_blank"
           rel="noopener noreferrer"
         >
-          <i class="fa-brands fa-whatsapp"></i>
+          <i class="fa-brands fa-whatsapp" aria-hidden="true"></i>
           <span>Fale conosco</span>
         </a>
       </nav>
 
       <a
-        class="header-cta"
+        class="site-nav-cta"
         href="https://wa.me/5511942842007?text=Ol%C3%A1%2C%20gostaria%20de%20solicitar%20um%20or%C3%A7amento."
         target="_blank"
         rel="noopener noreferrer"
       >
-        <i class="fa-brands fa-whatsapp"></i>
+        <i class="fa-brands fa-whatsapp" aria-hidden="true"></i>
         <span>Fale conosco</span>
       </a>
 
       <button
-        class="menu-toggle"
+        class="site-nav-toggle"
         id="menuToggle"
         type="button"
         aria-label="Abrir menu"
         aria-controls="menu"
         aria-expanded="false"
       >
-        ☰
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
       </button>
     </div>
   </header>
 
   <main>
-    <section class="hero" id="hero">
-      <div class="container hero-shell">
-        <div class="hero-copy">
-          <p class="eyebrow hero-eyebrow">
-            <i class="fa-solid fa-leaf"></i>
-            <span>JARDINAGEM • PAISAGISMO • MANUTENÇÃO</span>
-          </p>
+    <section class="hero hero--cinematic" id="hero">
+      <!-- Camadas de profundidade, do fundo para a frente: vídeo, luz, sombra,
+           raiz e folhagem desfocada. O JS move cada uma num ritmo diferente. -->
+      <div class="hero-media" aria-hidden="true">
+        <div class="hero-depth hero-depth--bg" data-depth="-0.35">
+          <video
+            class="hero-bg-video"
+            id="heroVideo"
+            autoplay
+            muted
+            loop
+            playsinline
+            preload="auto"
+            poster="./assets/jardim-ventania-poster.jpg"
+          >
+            <source src="./assets/Jardim%20Ventania.mp4" type="video/mp4" />
+          </video>
+        </div>
+        <span class="hero-shade"></span>
+        <span class="hero-light"></span>
+      </div>
 
-          <h1>
-            <span>Transformamos</span>
-            <span>espaços em</span>
-            <span class="hero-title-accent">natureza viva</span>
-          </h1>
-
-          <div class="hero-line" aria-hidden="true"></div>
-
-          <p class="hero-text">
-            Criamos e cuidamos de jardins que inspiram bem-estar,<br />
-            valorizam ambientes e conectam você ao que há de melhor:<br />
-            a natureza.
-          </p>
-
-          <div class="hero-actions">
-            <a href="#contato" class="btn hero-btn-primary">
-              <i class="fa-solid fa-leaf"></i>
-              <span>Solicitar orçamento</span>
-            </a>
-            <a href="#servicos" class="btn btn-outline hero-btn-secondary">
-              <i class="fa-regular fa-calendar"></i>
-              <span>Ver serviços</span>
-            </a>
-          </div>
-
-          <div class="hero-proof">
-            <div class="hero-proof-avatars" aria-hidden="true">
-              <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=120&q=80" alt="" />
-              <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=120&q=80" alt="" />
-              <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&w=120&q=80" alt="" />
-              <img src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=120&q=80" alt="" />
-            </div>
-
-            <div class="hero-proof-copy">
-              <strong>+200 clientes satisfeitos</strong>
-              <span>em Jundiaí e região</span>
-            </div>
+      <div class="hero-depth hero-depth--raiz" data-depth="0.6">
+        <div class="hero-raiz">
+          <div class="hero-raiz-drift">
+            <picture class="hero-raiz-sway">
+              <source srcset="./assets/raiz.webp" type="image/webp" />
+              <img
+                src="./assets/raiz.png"
+                alt="Raiz entrelaçada coberta de musgo verde e pequenas flores azuis"
+                width="2076"
+                height="757"
+                decoding="async"
+                fetchpriority="high"
+              />
+            </picture>
           </div>
         </div>
+      </div>
 
-        <div class="hero-visual">
-          <div class="garden-slot garden-slot--hero" data-garden-slot="hero">
-            <img
-              class="garden-static"
-              src="./assets/img jardim.png"
-              alt="Jardim paisagístico com árvore, banco de madeira e caminho de pedras"
-              width="1836"
-              height="1024"
-            />
+      <div class="hero-depth hero-depth--front" data-depth="0.25" aria-hidden="true">
+        <img class="hero-foliage hero-foliage--left" src="./assets/raiz-desfoque.webp" alt="" width="620" height="423" />
+        <img class="hero-foliage hero-foliage--right" src="./assets/raiz-desfoque.webp" alt="" width="620" height="423" />
+      </div>
+
+      <div class="hero-stage">
+        <div class="hero-intro">
+          <p class="hero-kicker">
+            <span class="hero-kicker-rule" aria-hidden="true"></span>
+            <i class="fa-solid fa-leaf" aria-hidden="true"></i>
+            <span>JARDINAGEM • PAISAGISMO • MANUTENÇÃO</span>
+            <span class="hero-kicker-rule" aria-hidden="true"></span>
+          </p>
+
+          <!-- O nome da marca se transforma na frase alternativa ao passar o mouse
+               (ou ao tocar, no celular). As duas versões ocupam a mesma célula do
+               grid, então nada ao redor se move; leitores de tela leem só o .sr-only. -->
+          <h1 class="hero-title" id="heroTitle">
+            <span class="sr-only">Raiz Silvestre</span>
+            <span class="hero-title-layer hero-title-main" aria-hidden="true">
+              <!-- O "R" é a própria logo: imagem + "aiz". -->
+              <span class="hero-word" style="--i: 0"><span class="logo-r hero-title-r"><img
+                    src="./assets/ChatGPT%20Image%2030%20de%20jul.%20de%202026%2C%2022_24_22.png"
+                    alt=""
+                    width="1536"
+                    height="1024"
+                  /></span>aiz</span>
+              <span class="hero-word" style="--i: 1">Silvestre</span>
+            </span>
+            <span class="hero-title-layer hero-title-alt" aria-hidden="true">
+              <span class="hero-title-alt-line">
+                <span class="hero-word" style="--i: 0">Seu</span>
+                <span class="hero-word" style="--i: 1">jardim,</span>
+                <span class="hero-word" style="--i: 2">uma</span>
+                <span class="hero-word" style="--i: 3">nova</span>
+              </span>
+              <span class="hero-title-alt-line hero-title-moss">
+                <span class="hero-word" style="--i: 4">forma</span>
+                <span class="hero-word" style="--i: 5">de</span>
+                <span class="hero-word" style="--i: 6">viver.</span>
+              </span>
+            </span>
+          </h1>
+
+          <p class="hero-tagline">
+            Transformamos espaços em <em>natureza viva.</em>
+          </p>
+
+          <p class="hero-description">
+            Criamos e cuidamos de jardins que inspiram bem-estar, valorizam ambientes
+            e conectam você ao que há de melhor: a natureza.
+          </p>
+
+          <div class="hero-cta-wrap">
+            <a href="#contato" class="hero-cta">
+              <i class="fa-solid fa-leaf" aria-hidden="true"></i>
+              <span>Solicitar orçamento</span>
+              <i class="fa-solid fa-arrow-right hero-cta-arrow" aria-hidden="true"></i>
+            </a>
           </div>
         </div>
       </div>
     </section>
-
-    <div class="garden-layer" id="gardenLayer">
-      <div class="garden-traveler" id="gardenTraveler">
-        <div class="garden-entry">
-          <span class="garden-shadow" aria-hidden="true"></span>
-          <div class="garden-float">
-            <div class="garden-tilt">
-              <img
-                src="./assets/img jardim.png"
-                alt="Jardim paisagístico com árvore, banco de madeira e caminho de pedras"
-                width="1836"
-                height="1024"
-                decoding="async"
-              />
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
 
     <section class="benefits-marquee" id="beneficios-faixa" aria-label="Diferenciais da Raiz Silvestre em movimento contínuo">
       <div class="benefits-marquee-wrapper" id="benefitsMarqueeWrapper">
@@ -250,8 +263,8 @@
     <section class="section sobre-premium" id="sobre">
       <div class="container sobre-container">
         <div class="sobre-visual">
-          <div class="garden-slot garden-slot--sobre" data-garden-slot="sobre">
-            <img class="garden-static" src="./assets/img%20jardim.png" alt="" width="1536" height="1024" loading="lazy" />
+          <div class="garden-slot garden-slot--sobre">
+            <img class="garden-static" src="./assets/img%20jardim.png" alt="Jardim paisagístico com árvore, banco de madeira e caminho de pedras" width="1536" height="1024" loading="lazy" />
           </div>
         </div>
 
