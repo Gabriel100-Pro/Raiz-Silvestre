@@ -1,3 +1,8 @@
+// Contato: todo link de WhatsApp do site sai daqui, com a mensagem já codificada.
+const WHATSAPP_URL = "https://wa.me/5511942842007";
+const buildWhatsappLink = (message) =>
+  message ? `${WHATSAPP_URL}?text=${encodeURIComponent(message)}` : WHATSAPP_URL;
+
 const menuToggle = document.getElementById("menuToggle");
 const menu = document.getElementById("menu");
 
@@ -121,7 +126,6 @@ if (serviceModal && typeof serviceModal.showModal === "function") {
   const modalImage = document.getElementById("serviceModalImage");
   const modalCta = document.getElementById("serviceModalCta");
   const modalClose = serviceModal.querySelector(".service-modal-close");
-  const whatsappBase = modalCta ? modalCta.href.split("?")[0] : "";
   let lastTrigger = null;
 
   const openServiceModal = (trigger) => {
@@ -148,7 +152,7 @@ if (serviceModal && typeof serviceModal.showModal === "function") {
 
     if (modalCta) {
       const message = `Olá! Gostaria de solicitar um orçamento de ${title}.`;
-      modalCta.href = `${whatsappBase}?text=${encodeURIComponent(message)}`;
+      modalCta.href = buildWhatsappLink(message);
     }
 
     lastTrigger = trigger;
@@ -335,8 +339,7 @@ if (orcamentoForm) {
       `Mensagem: ${mensagem}`
     ].join("\n");
 
-    const urlWhatsapp = `https://wa.me/5511942842007?text=${encodeURIComponent(textoWhatsapp)}`;
-    window.open(urlWhatsapp, "_blank", "noopener,noreferrer");
+    window.open(buildWhatsappLink(textoWhatsapp), "_blank", "noopener,noreferrer");
 
     if (orcamentoSucesso) {
       orcamentoSucesso.hidden = false;
@@ -500,6 +503,83 @@ if (heroTitle) {
       setAlt(!heroTitle.classList.contains("is-alt"));
     }
   });
+}
+
+// Botões dos pacotes: cada um abre o WhatsApp com a mensagem do próprio plano.
+document.querySelectorAll("[data-whatsapp-message]").forEach((link) => {
+  link.href = buildWhatsappLink(link.dataset.whatsappMessage);
+});
+
+// Revela um bloco ao entrar na tela (adiciona .is-visible uma única vez).
+const revealOnView = (element, onReveal, threshold = 0.25) => {
+  const reveal = () => {
+    element.classList.add("is-visible");
+    onReveal?.();
+  };
+
+  if (!("IntersectionObserver" in window)) {
+    reveal();
+    return;
+  }
+
+  new IntersectionObserver((entries, observer) => {
+    if (entries.some((entry) => entry.isIntersecting)) {
+      observer.disconnect();
+      reveal();
+    }
+  }, { threshold }).observe(element);
+};
+
+// Indicadores: os números contam de zero até o valor de data-count.
+// Com movimento reduzido, o valor final aparece direto.
+const statsSection = document.getElementById("numeros");
+
+if (statsSection) {
+  const statValues = Array.from(statsSection.querySelectorAll(".stat-value[data-count]"));
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  const formatStat = (element, value) =>
+    `${element.dataset.prefix || ""}${value}${element.dataset.suffix || ""}`;
+
+  const countUp = (element, delay) => {
+    const target = Number(element.dataset.count) || 0;
+    const duration = 1600;
+    let start = 0;
+
+    const step = (now) => {
+      start = start || now;
+      const progress = Math.min((now - start) / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      element.textContent = formatStat(element, Math.round(target * eased));
+
+      if (progress < 1) {
+        window.requestAnimationFrame(step);
+      }
+    };
+
+    window.setTimeout(() => window.requestAnimationFrame(step), delay);
+  };
+
+  statsSection.classList.add("stats-ready");
+
+  if (!reduceMotion) {
+    statValues.forEach((element) => {
+      element.textContent = formatStat(element, 0);
+    });
+  }
+
+  revealOnView(statsSection, () => {
+    if (!reduceMotion) {
+      statValues.forEach((element, index) => countUp(element, 250 + index * 140));
+    }
+  }, 0.2);
+}
+
+const pacotesSection = document.getElementById("pacotes");
+
+if (pacotesSection) {
+  pacotesSection.classList.add("pacotes-ready");
+  revealOnView(pacotesSection, null, 0.12);
 }
 
 if (typeof AOS !== "undefined") {

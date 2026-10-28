@@ -11,7 +11,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link
-    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Inter:wght@400;500;600;700&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,500;1,600&family=Inter:wght@400;500;600;700&display=swap"
     rel="stylesheet"
   />
   <link rel="stylesheet" href="style.css" />
@@ -183,6 +183,47 @@
             </a>
           </div>
         </div>
+      </div>
+    </section>
+
+    <section class="stats" id="numeros" aria-labelledby="statsTitle">
+      <div class="container">
+        <div class="stats-head">
+          <div class="stats-head-main">
+            <p class="stats-kicker">(01) — Nosso trabalho em números</p>
+            <h2 class="stats-title" id="statsTitle">
+              Cuidado em cada detalhe.
+              <em>Resultados que florescem.</em>
+            </h2>
+          </div>
+          <p class="stats-intro">
+            Cada jardim tem sua própria identidade. Nosso trabalho une técnica, cuidado
+            e atenção aos detalhes para transformar e preservar espaços verdes.
+          </p>
+        </div>
+
+        <!-- INDICADORES: único lugar onde os números ficam. Os valores abaixo são
+             sugestões iniciais e devem ser confirmados pelo proprietário.
+             data-count = número animado; data-prefix / data-suffix = símbolos
+             ao redor; o texto dentro do <span> é o que aparece sem JavaScript. -->
+        <ul class="stats-list">
+          <li class="stat" style="--i: 0">
+            <span class="stat-value" data-count="200" data-prefix="+">+200</span>
+            <span class="stat-label">Clientes satisfeitos</span>
+          </li>
+          <li class="stat" style="--i: 1">
+            <span class="stat-value" data-count="50" data-prefix="+">+50</span>
+            <span class="stat-label">Jardins cuidados</span>
+          </li>
+          <li class="stat" style="--i: 2">
+            <span class="stat-value" data-count="5" data-prefix="+">+5</span>
+            <span class="stat-label">Anos de experiência</span>
+          </li>
+          <li class="stat" style="--i: 3">
+            <span class="stat-value" data-count="100" data-suffix="%">100%</span>
+            <span class="stat-label">Compromisso com cada projeto</span>
+          </li>
+        </ul>
       </div>
     </section>
 
@@ -961,6 +1002,108 @@
             Agendar atendimento
           </a>
         </div>
+      </div>
+    </section>
+
+    <section class="pacotes" id="pacotes" aria-labelledby="pacotesTitle">
+      <div class="container">
+        <div class="pacotes-head">
+          <p class="pacotes-kicker">
+            <span class="pacotes-kicker-rule" aria-hidden="true"></span>
+            <span>Cuidado contínuo • Raiz Silvestre</span>
+            <span class="pacotes-kicker-rule" aria-hidden="true"></span>
+          </p>
+          <h2 class="pacotes-title" id="pacotesTitle">O cuidado ideal para o seu jardim.</h2>
+          <p class="pacotes-intro">
+            Cada espaço verde tem necessidades únicas. Conheça nossas modalidades de
+            manutenção e encontre o cuidado ideal para o seu jardim.
+          </p>
+        </div>
+
+        <!-- Os botões abrem o WhatsApp com a mensagem de data-whatsapp-message
+             (montada em script.js); o href é o fallback sem JavaScript. -->
+        <div class="pacotes-grid">
+          <article class="pacote" style="--i: 0">
+            <span class="pacote-icon" aria-hidden="true"><i class="fa-solid fa-leaf"></i></span>
+            <h3 class="pacote-title">Plano Avulso</h3>
+            <p class="pacote-desc">Para quem precisa de cuidados pontuais, conforme a necessidade do jardim.</p>
+            <p class="pacote-list-title">Serviços que podem ser realizados</p>
+            <ul class="pacote-list">
+              <li>Podas de folhas e galhos.</li>
+              <li>Limpeza e organização do jardim.</li>
+              <li>Adubação conforme a necessidade.</li>
+              <li>Cuidados específicos definidos na avaliação.</li>
+            </ul>
+            <a
+              class="pacote-cta"
+              href="https://wa.me/5511942842007"
+              data-whatsapp-message="Olá! Gostaria de solicitar um orçamento para manutenção avulsa do meu jardim com a Raiz Silvestre."
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Solicitar orçamento do Plano Avulso pelo WhatsApp"
+            >
+              <i class="fa-brands fa-whatsapp" aria-hidden="true"></i>
+              <span>Solicitar orçamento</span>
+            </a>
+          </article>
+
+          <article class="pacote pacote--destaque" style="--i: 1">
+            <span class="pacote-icon" aria-hidden="true"><i class="fa-solid fa-seedling"></i></span>
+            <h3 class="pacote-title">Plano Mensal</h3>
+            <p class="pacote-desc">Manutenção contínua para conservar seu jardim bonito, saudável e bem cuidado ao longo do tempo.</p>
+            <p class="pacote-list-title">Serviços que podem ser realizados</p>
+            <ul class="pacote-list">
+              <li>Manutenção periódica do jardim.</li>
+              <li>Podas e controle de crescimento.</li>
+              <li>Limpeza e retirada de resíduos vegetais.</li>
+              <li>Adubação e cuidados com as plantas conforme a necessidade.</li>
+            </ul>
+            <a
+              class="pacote-cta"
+              href="https://wa.me/5511942842007"
+              data-whatsapp-message="Olá! Tenho interesse no plano mensal de manutenção de jardins da Raiz Silvestre."
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Solicitar orçamento do Plano Mensal pelo WhatsApp"
+            >
+              <i class="fa-brands fa-whatsapp" aria-hidden="true"></i>
+              <span>Solicitar orçamento</span>
+            </a>
+          </article>
+
+          <article class="pacote" style="--i: 2">
+            <span class="pacote-icon" aria-hidden="true"><i class="fa-regular fa-calendar-days"></i></span>
+            <h3 class="pacote-title">Duas Visitas por Mês</h3>
+            <p class="pacote-desc">Visitas programadas duas vezes ao mês para manter o jardim em boas condições durante todo o período.</p>
+            <p class="pacote-list-title">Serviços que podem ser realizados</p>
+            <ul class="pacote-list">
+              <li>Duas visitas programadas por mês.</li>
+              <li>Podas e manutenção da vegetação.</li>
+              <li>Limpeza e organização do espaço.</li>
+              <li>Adubação e cuidados específicos conforme a necessidade.</li>
+            </ul>
+            <a
+              class="pacote-cta"
+              href="https://wa.me/5511942842007"
+              data-whatsapp-message="Olá! Gostaria de saber mais sobre o plano de duas visitas mensais para manutenção do meu jardim."
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Solicitar orçamento do plano de Duas Visitas por Mês pelo WhatsApp"
+            >
+              <i class="fa-brands fa-whatsapp" aria-hidden="true"></i>
+              <span>Solicitar orçamento</span>
+            </a>
+          </article>
+        </div>
+
+        <p class="pacotes-nota">
+          <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
+          <span>
+            Os valores são definidos após uma avaliação, pois cada jardim possui dimensões,
+            espécies e necessidades diferentes. As atividades de cada visita são combinadas
+            de acordo com as necessidades do espaço e o orçamento acordado.
+          </span>
+        </p>
       </div>
     </section>
   </main>
